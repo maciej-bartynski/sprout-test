@@ -1,0 +1,20 @@
+.root {
+    width: 100%;
+}
+
+.title {
+    display: block;
+    width: 100%;
+    background-color: gray;
+    color: white;
+    font-size: 20px;
+    font-family: sans-serif;
+    padding: 20px calc( 50% - 500px );
+}
+
+.section {
+    width: 100%;
+    max-width: 1020px;
+    margin: 0 auto;
+    padding: 10px;
+}

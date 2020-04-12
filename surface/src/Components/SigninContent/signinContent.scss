@@ -1,0 +1,20 @@
+.parag {
+    font-size: 20px;
+    font-family: sans-serif;
+    line-height: 1.2;
+
+    img {
+        max-width: 100%;
+    }
+}
+
+.fetched {
+    width: 100%;
+    max-width: 400px;
+    border: solid 2px gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}

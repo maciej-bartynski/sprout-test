@@ -1,0 +1,23 @@
+const ModuleBuilder = require('./../module')
+
+const DetermineWebaddress = function (name) {
+    this.super(name);
+
+    this.__createModule = function () {
+        const { required, setExpose } = this;
+        const webaddress = `${required.protocol()}://${required.domain()}`;
+        setExpose({
+            webaddress
+        })
+        this.logger(`Web address set to ${webaddress}`);
+    }
+}
+
+DetermineWebaddress.prototype = Object.create(ModuleBuilder.prototype);
+const determineWebaddress = new DetermineWebaddress('DETERMINE-WEBADDRESS');
+determineWebaddress.setRequired({
+    domain: undefined,
+    protocol: undefined,
+})
+
+module.exports = determineWebaddress
