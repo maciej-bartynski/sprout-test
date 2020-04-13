@@ -1,4 +1,4 @@
-const Test = require('./models/test');
+const { Test } = require('./models');
 
 module.exports = () => {
     Test.findOne({ staticId: 'some-test-string' }, (err, test) => {

@@ -1,10 +1,9 @@
-const home = require('./home');
-const signin = require('./signin');
-const signup = require('./signup');
+const { signup, signin, signout } = require('./auth');
+const { test: test_controller, path: test_path } = require('./test');
 
 module.exports = (router) => {
-    router.get('/test', (req, res)=>res.json({ msg: "test succeed"}))
-    router.get('/api/home', home);
-    router.get('/api/signup', signup);
-    router.get('/api/signin', signin);
+    if (process.env.MODE_PRODUCTION !== 'true' && process.env.MODE_PRODUCTION !== true) router.get(test_path, test_controller);
+    router.post('/api/signup', signup);
+    router.post('/api/signin', signin);
+    router.get('/api/signout', signout);
 }

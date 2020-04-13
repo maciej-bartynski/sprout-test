@@ -61,7 +61,7 @@ const ok = (message, color = 'green') => {
     console.log(`${'[ok]'[color]} ${message}`);
 }
 
-const strong = (message, color = 'cyan') => {
+const strong = (message, color = 'magenta') => {
     const len = message.length + 4;
     let border = "";
     for (let i = 0; i < len; i++) {
