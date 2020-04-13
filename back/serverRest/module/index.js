@@ -1,3 +1,5 @@
+const log = require('./../../util/logger');
+
 function Module() { }
 
 Module.prototype = {
@@ -49,18 +51,17 @@ Module.prototype.__requiredCheck = function () {
 };
 
 Module.prototype.__finalLogger = function () {
-    console.log(`${this.__name__}. Exposed fields: ${(() => {
-        const fields = [];
-        Object.keys(this.get()).forEach(field => {
-            fields.push(field)
-        })
-        return fields.join(',')
-    })()}`)
+    const exposedFields = [];
+    Object.keys(this.get()).forEach(field => {
+        exposedFields.push(field)
+    })
+    const msg = `${this.__name__}. Exposed fields: ${exposedFields.join(', ')}.`
+    log.info(msg)
 };
 
 Module.prototype.get = function () {
     const { expose } = this;
-    
+
     const toReturn = {};
     for (const key in expose) {
         toReturn[key] = () => expose[key];
@@ -69,34 +70,23 @@ Module.prototype.get = function () {
     return toReturn;
 };
 
-Module.prototype.logger = function (info, type = "msg") {
-    const message = `${this.__name__ || '(ANONYMOUS).'}. ${info}`;
-    if (type === 'msg') console.log(`${message}`);
-    if (type === 'strong') console.log(`
-        ${message}
-`);
+Module.prototype.logger = function (info, stat = "msg") {
+    const message = `${this.__name__ || '(ANONYMOUS)'}. ${info}`;
+    if (stat === 'warn') log.warn(message);;
+    if (stat === 'fail') log.fail(message);;
+    if (stat === 'ok') log.ok(message);;
+    if (stat === 'msg') log.info(message);;
+    if (stat === 'spec') log.strong(message);
 }
 
 Module.prototype.create = async function (...forUse) {
-    console.log(`
-###### MODULE: ${this.__name__} ######`);
-    try {
-        this.__use(...forUse);
-        this.__requiredCheck();
-    } catch (e) {
-        console.log(`${this.__name__}: use. ${e}`)
-    }
-
-    try {
-        await this.__createModule();
-    } catch (e) {
-        console.log(`${this.__name__}: create. ${e}`)
-    }
-
+    const sectionMessage = [this.__name__, "start"]
+    log.section(...sectionMessage);
+    this.__use(...forUse);
+    this.__requiredCheck();
+    await this.__createModule();
     this.__finalLogger();
-
-    console.log(`###### MODULE END: ${this.__name__} ######
-`);
+    log.endsec(...sectionMessage);
 };
 
 module.exports = Module;

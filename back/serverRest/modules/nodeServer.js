@@ -36,15 +36,12 @@ const NodeServer = function (name) {
             ? required.protocol()
             : null;
 
-        try {
-            setState({
-                server: require(usePackage).createServer(...state.useParams),
-                usePackage
-            });
-            this.logger(`Server created with "${usePackage}" package.`);
-        } catch (e) {
-            this.logger(`Server creation failed. ${e}`)
-        }
+        setState({
+            server: require(usePackage).createServer(...state.useParams),
+            usePackage
+        });
+        this.logger(`Server created with "${usePackage}" package.`);
+
     };
 
 
@@ -54,21 +51,15 @@ const NodeServer = function (name) {
         let portingTimeout = null;
         return new Promise((res) => {
             portingTimeout = setTimeout(() => {
-                this.logger(`Failure: binding port timeout. This is unhandled scenario!`);
+                this.logger(`Failure: binding port timeout. This is unhandled scenario!`, 'fail', 'info');
                 res(false);
             }, 30000)
 
-            try {
-                state.server.listen(required.port(), () => {
-                    clearTimeout(portingTimeout);
-                    this.logger(`Server is listening on port: ${required.port()}.`);
-                    res(true);
-                });
-            } catch (e) {
-                this.logger(`Failure during server listen attempt: ${e}.`)
+            state.server.listen(required.port(), () => {
                 clearTimeout(portingTimeout);
-                res(false);
-            }
+                this.logger(`Server is listening on port: ${required.port()}.`, 'ok', 'info');
+                res(true);
+            });
         })
     };
 
@@ -89,5 +80,5 @@ const NodeServer = function (name) {
 }
 
 NodeServer.prototype = Object.create(ModuleBuilder.prototype);
-const nodeServer = new NodeServer('NODE-SERVER');
+const nodeServer = new NodeServer('[node-server]');
 module.exports = nodeServer;

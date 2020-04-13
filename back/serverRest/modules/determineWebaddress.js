@@ -14,7 +14,7 @@ const DetermineWebaddress = function (name) {
 }
 
 DetermineWebaddress.prototype = Object.create(ModuleBuilder.prototype);
-const determineWebaddress = new DetermineWebaddress('DETERMINE-WEBADDRESS');
+const determineWebaddress = new DetermineWebaddress('[webaddress]');
 determineWebaddress.setRequired({
     domain: undefined,
     protocol: undefined,

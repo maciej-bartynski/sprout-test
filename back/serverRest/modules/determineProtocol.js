@@ -10,7 +10,7 @@ const DetermineProtocol = function (name) {
             cert: null,
             key: null,
         })
-        this.logger(`Protocol is forced to be set to http.`);
+        this.logger(`Protocol is forced to be set to http.`, 'warn', 'info');
     }
 
     this.__whenCertificationFound = function (cert, key) {
@@ -19,7 +19,7 @@ const DetermineProtocol = function (name) {
             cert,
             key,
         })
-        this.logger(`Files considered as certification found. Protocol is set to https.`);
+        this.logger(`Files considered as certification found. Protocol is set to https.`, 'ok', 'info');
     }
 
     this.__whenCertificationNotFound = function () {
@@ -30,16 +30,6 @@ const DetermineProtocol = function (name) {
             forceHttp: true,
         })
         this.logger(`Files considered as certification not found. Protocol is set to http.`)
-    }
-
-    this.__whenCertificationSearchErr = function (e) {
-        this.setState({
-            protocol: "http",
-            cert: null,
-            key: null,
-            forceHttp: true,
-        })
-        this.logger(`Resolving certification files failed: ${e}. Protocol is set to http.`)
     }
 
     this.__setProtocol = function () {
@@ -56,15 +46,11 @@ const DetermineProtocol = function (name) {
             return;
         }
 
-        try {
-            const { CERTIFICATE_FILE, PRIVATE_KEY_FILE } = process.env;
-            const key = fs.readFileSync(path.join(__dirname, '../cert', PRIVATE_KEY_FILE), "utf8");
-            const cert = fs.readFileSync(path.join(__dirname, '../cert', CERTIFICATE_FILE), "utf8");
-            if (key && cert) this.__whenCertificationFound(cert, key);
-            else this.__whenCertificationNotFound();
-        } catch (e) {
-            this.__whenCertificationSearchErr(e);
-        }
+        const { CERTIFICATE_FILE, PRIVATE_KEY_FILE } = process.env;
+        const key = fs.readFileSync(path.join(__dirname, '../cert', PRIVATE_KEY_FILE), "utf8");
+        const cert = fs.readFileSync(path.join(__dirname, '../cert', CERTIFICATE_FILE), "utf8");
+        if (key && cert) this.__whenCertificationFound(cert, key);
+        else this.__whenCertificationNotFound();
     };
 
     this.__setAttempts = function () {
@@ -91,7 +77,7 @@ const DetermineProtocol = function (name) {
 }
 
 DetermineProtocol.prototype = Object.create(ModuleBuilder.prototype);
-const determineProtocol = new DetermineProtocol('DETERMINE-PROTOCOL');
+const determineProtocol = new DetermineProtocol('[protocol]');
 
 determineProtocol.setState({
     protocol: "",

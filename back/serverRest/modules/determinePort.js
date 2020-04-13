@@ -26,5 +26,5 @@ const DeterminePort = function (name) {
 }
 
 DeterminePort.prototype = Object.create(ModuleBuilder.prototype)
-const determinePort = new DeterminePort('DETERMINE-PORT');
+const determinePort = new DeterminePort('[port]');
 module.exports = determinePort

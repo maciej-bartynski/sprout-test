@@ -28,7 +28,7 @@ const DetermineDomain = function (name) {
 }
 
 DetermineDomain.prototype = Object.create(ModuleBuilder.prototype);
-const determineDomain = new DetermineDomain('DETERMINE-DOMAIN');
+const determineDomain = new DetermineDomain('[domain]');
 
 determineDomain.setState({
     domain: null,

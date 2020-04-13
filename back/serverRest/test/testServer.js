@@ -13,7 +13,7 @@ const TestServer = function (name) {
         let connectionTimeout = null;
         return new Promise((res) => {
             connectionTimeout = setTimeout(() => {
-                this.logger(`Test at "${testAddress}" failed - connection timeout.`)
+                this.logger(`Test at "${testAddress}" failed - connection timeout.`, 'fail', 'info')
                 res(false)
             }, 30000);
 
@@ -28,19 +28,19 @@ const TestServer = function (name) {
                     });
                     response.on("end", () => {
                         clearTimeout(connectionTimeout);
-                        this.logger(`Response from "${testAddress}" received: ${data}`)
+                        this.logger(`Response from "${testAddress}" received: ${data}`, 'ok', 'info')
                         res(true);
                     });
                 }).on("error", (e) => {
                     clearTimeout(connectionTimeout);
                     testServer.close();
-                    this.logger('Connection test failure.', e);
+                    this.logger(`Connection test failure. ${e}.`, 'fail', 'info');
                     res(false);
                 })
 
             } catch (e) {
                 clearTimeout(connectionTimeout);
-                this.logger('Connection attemp failed.', e);
+                this.logger(`Connection attemp failed: ${e}.`, 'fail', 'info');
                 res(false);
             }
 
@@ -68,19 +68,19 @@ const TestServer = function (name) {
     this.__testServer = async function() {
         const success = await this.__sendTestRequest();
         if (!success) {
-            this.logger(`Test failed. Server will be closed.`);
+            this.logger(`Test failed. Server will be closed.`, 'fail', 'info');
             const { server } = this.required;
             try {
                 server().close();
                 this.logger(`Server closed.`);
             } catch (e) {
-                this.logger(`Server closing failure: ${e}.`);
+                this.logger(`Server closing failure: ${e}.`, 'fail', 'info');
             }
         }
         this.setExpose({
             serverTestSuccess: success
         })
-        this.logger(`Test success: ${this.expose.serverTestSuccess}.`)
+        this.logger(`Test success: ${this.expose.serverTestSuccess}.`, 'ok', 'info')
     }
 
     this.__createModule = async function () {
@@ -90,7 +90,7 @@ const TestServer = function (name) {
 }
 
 TestServer.prototype = Object.create(ModuleBuilder.prototype);
-const testServer = new TestServer('TEST SERVER');
+const testServer = new TestServer('[test-server]');
 
 testServer.setRequired({
     server: undefined,

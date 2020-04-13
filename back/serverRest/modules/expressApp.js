@@ -65,5 +65,5 @@ const ExpressApp = function (name) {
 }
 
 ExpressApp.prototype = Object.create(ModuleBuilder.prototype);
-const expressApp = new ExpressApp('EXPRESS-APP');
+const expressApp = new ExpressApp('[express-app]');
 module.exports = expressApp;
