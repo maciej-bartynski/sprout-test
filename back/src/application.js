@@ -11,10 +11,9 @@ config();
 async function Application() {
     let router = await createServerREST();
     if (!router) throw new Error('APPLICATION. Failure: there is no router.');
-    else
-        log.frame(
+    else log.frame(
             `Server REST available at: ${determineWebaddress
-                .get()
+    .get()
                 .webaddress()}`,
             'blue'
         );
