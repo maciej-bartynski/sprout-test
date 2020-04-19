@@ -5,4 +5,4 @@ for (const key in messages) {
     disabledLog[key] = () => {};
 }
 
-export default process.env.DISABLE_LOGS ? disabledLog : messages;
+export default process.env.IS_PRODUCTION === 'true' ? disabledLog : messages;
