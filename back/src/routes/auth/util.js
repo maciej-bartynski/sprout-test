@@ -1,3 +1,3 @@
 export default Object.freeze({
-    authcookie: "sprout[t]",
-})
+    authcookie: 'sprout[t]'
+});

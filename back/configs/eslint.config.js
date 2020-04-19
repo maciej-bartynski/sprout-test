@@ -11,23 +11,5 @@ module.exports = {
 		'ecmaFeatures': {
 			'impliedStrict': true
 		}
-	},
-	'rules': {
-		'indent': [
-			1,
-			'tab'
-		],
-		'linebreak-style': [
-			1,
-			'windows'
-		],
-		'quotes': [
-			1,
-			'single'
-		],
-		'semi': [
-			1,
-			'always'
-		]
 	}
 };

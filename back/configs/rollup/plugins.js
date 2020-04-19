@@ -4,17 +4,15 @@ import { uglify } from 'rollup-plugin-uglify';
 import includePaths from 'rollup-plugin-includepaths';
 import babel from 'rollup-plugin-babel';
 import watch from '@rollup/plugin-run';
+import babelrc from './../babel.config';
 
 const plugins = [
-    babel({
-        exclude: 'node_modules/**',
-        runtimeHelpers: true
-    }),
+    babel(babelrc),
     resolve(),
     commonjs(),
     uglify(),
     includePaths({ paths: ["./src"] }),
-    watch()
+    watch(),
 ];
 
 export default plugins

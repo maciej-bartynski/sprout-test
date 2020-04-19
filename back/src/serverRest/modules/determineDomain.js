@@ -1,8 +1,7 @@
 import ModuleBuilder from './../module';
-//const ModuleBuilder = require('./../module')
 
 const DetermineDomain = function (name) {
-    this.super(name)
+    this.super(name);
 
     this.__setDomain = function () {
         const { required, setState, state } = this;
@@ -11,32 +10,32 @@ const DetermineDomain = function (name) {
         const domain = DOMAIN ? DOMAIN : localDomain;
         setState({
             domain
-        })
-        this.logger(`Domain is set: ${state.domain}.`)
+        });
+        this.logger(`Domain is set: ${state.domain}.`);
     };
 
     this.__setExposedValues = function () {
         const { setExpose, state } = this;
         setExpose({
             domain: state.domain
-        })
-    }
+        });
+    };
 
     this.__createModule = function () {
         this.__setDomain();
         this.__setExposedValues();
-    }
-}
+    };
+};
 
 DetermineDomain.prototype = Object.create(ModuleBuilder.prototype);
 const determineDomain = new DetermineDomain('[domain]');
 
 determineDomain.setState({
-    domain: null,
+    domain: null
 });
 
 determineDomain.setRequired({
-    port: undefined,
+    port: undefined
 });
 
 determineDomain.setExpose({});
