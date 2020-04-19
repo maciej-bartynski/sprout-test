@@ -1,5 +1,3 @@
-import 'colors';
-
 const frame = (message, color = 'cyan') => {
     const len = message.length + 4;
     let border = '';

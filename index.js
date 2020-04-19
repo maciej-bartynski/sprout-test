@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const Application = async () => {
-    const router = await require('./back/application')();
+    const router = await require('./back/build/build')();
     const htmlFilePath = path.join(__dirname, 'frontTest', 'index.html');
     const cssFilePath = path.join(__dirname, 'frontTest', 'index.css');
     const jsFilePath = path.join(__dirname, 'frontTest', 'index.js');

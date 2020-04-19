@@ -1,8 +1,5 @@
-import { config } from 'dotenv';
 import mongoose from 'mongoose';
 import populate from './populate';
-
-config();
 
 export default () => {
     mongoose

@@ -1,8 +1,5 @@
-import { config } from 'dotenv';
 import { Server as WebSocketServerConstructor } from 'ws';
 import Test from './../dbConfig/models/test';
-
-config();
 
 class ServerWs {
     constructor() {

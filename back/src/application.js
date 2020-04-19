@@ -1,12 +1,9 @@
-import { config } from 'dotenv';
 import setRoutes from 'routes';
 import dbConfig from 'dbConfig';
 import createServerREST from 'serverRest';
 import ServerWS from 'serverWs';
 import log from 'util/logger';
 import determineWebaddress from 'serverRest/modules/determineWebaddress';
-
-config();
 
 async function Application() {
     let router = await createServerREST();
@@ -24,4 +21,5 @@ async function Application() {
     return router;
 }
 
+module.exports = Application;
 export default Application;
