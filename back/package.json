@@ -42,15 +42,24 @@
     "@rollup/plugin-run": "^2.0.2",
     "eslint": "^6.8.0",
     "husky": "^4.2.5",
+    "lint-staged": "^10.1.6",
     "prettier": "^2.0.4",
     "rollup": "^2.6.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-includepaths": "^0.2.3",
     "rollup-plugin-uglify": "^6.0.4"
   },
+  "lint-staged": {
+    "*.js": [
+      "npm run prettier",
+      "npm run lint", 
+      "git add",
+      "git commit"
+    ]
+  },
   "husky": {
     "hooks": {
-      "pre-push": "npm run prettier && npm run lint"
+      "pre-push": "lint-staged"
     }
   }
 }
