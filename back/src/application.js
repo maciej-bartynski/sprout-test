@@ -14,8 +14,8 @@ async function Application() {
     else
         log.frame(
             `Server REST available at: ${determineWebaddress
-.get()
-.webaddress()}`,
+                .get()
+                .webaddress()}`,
             'blue'
         );
     new ServerWS();

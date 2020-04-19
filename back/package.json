@@ -53,13 +53,12 @@
     "*.js": [
       "npm run prettier",
       "npm run lint", 
-      "git add",
-      "git commit"
+      "git add"
     ]
   },
   "husky": {
     "hooks": {
-      "pre-push": "lint-staged"
+      "pre-commit": "lint-staged"
     }
   }
 }
