@@ -1,3 +1,5 @@
+import log from 'util/logger';
+
 const responseWithRecordError = (e, res) => {
     const data = {
         success: false,
@@ -17,4 +19,4 @@ const responseWithRecordError = (e, res) => {
     return res.status(400).json(data);
 };
 
-export default responseWithRecordError
+export default responseWithRecordError;

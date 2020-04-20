@@ -17,9 +17,9 @@ const user = new Schema(
             maxlength: 300
         },
         category: [100],
-        tags: [1,2,3],
+        tags: [1, 2, 3],
         author: [333],
-        comments: [123,143,]
+        comments: [123, 143]
     },
     {
         timestamps: true

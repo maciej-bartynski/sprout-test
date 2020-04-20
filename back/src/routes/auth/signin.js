@@ -2,14 +2,13 @@ import models from '../../database/models';
 import jwt from 'jsonwebtoken';
 import constants from './util';
 import parseRequest from 'routes/utils/findByField';
-import responseWithRecordError from 'routes/utils/responseWithRecordError';
 
 const { authcookie } = constants;
 const { User } = models;
 
 const responseWithUserSignedIn = (user, res) => {
     const { _id, name, email, about } = user;
-    
+
     const filteredUser = {
         _id,
         name,
@@ -26,19 +25,24 @@ const responseWithUserSignedIn = (user, res) => {
         msg: 'User signed in.',
         user: { ...filteredUser }
     });
+};
 
+const responseWithMismatch = (user, res) => {
+    return res.status(200).json({
+        success: false,
+        msg: 'Email and password missmatch.',
+        data: user.email
+    });
 };
 
 export default (req, res) => {
-    console.log('AM I EVEN THERE AS FUCK')
-    parseRequest(req, ['email', 'password'])
-        .findByField(User, 'email', (e, user, parsedFields) => {
-            console.log('AM I EVEN THERE')
-            if (e) return responseWithRecordError(e, res);
-            if (!user) return responseWithRecordErrorr(false, res);
-            if (user.authenticate(parsedFields.password)) return responseWithUserSignedIn(user, res);
-            return responseWithRecordError(false, res);
-        })
-}
-
-
+    parseRequest(req, res, ['email', 'password']).findByFields(
+        User,
+        ['email'],
+        (user) => {
+            if (user.authenticate(req.body.password))
+                return responseWithUserSignedIn(user, res);
+            else return responseWithMismatch(user, res);
+        }
+    );
+};

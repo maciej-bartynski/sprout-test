@@ -6,4 +6,4 @@ const responseWithRecordSuccess = (receivdRecord, res) => {
     });
 };
 
-export default responseWithRecordSuccess
+export default responseWithRecordSuccess;

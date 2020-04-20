@@ -4,11 +4,11 @@ import responseWithRecord from 'routes/utils/responseWithRecord';
 const { User } = models;
 
 export default (req, res) => {
-    parseRequest(req, ['name', 'email', 'password', 'about'])
+    parseRequest(req, res, ['name', 'email', 'password', 'about'])
         .createQuery(User)
         .save((e, user = {}) => {
             user.salt = undefined;
-            user.hashed_password = undefined
+            user.hashed_password = undefined;
             responseWithRecord(res)(e, user);
         });
-}
+};

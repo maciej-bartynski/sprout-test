@@ -1,1 +1,1 @@
-export const name = "Category";
+export const name = 'Category';
