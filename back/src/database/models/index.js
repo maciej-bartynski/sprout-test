@@ -1,12 +1,18 @@
 import User from './User';
 import Test from './Test';
 import Category from './Category';
+import Article from './Article';
+import Tag from './Tag';
+import Comment from './Comment';
 import { model } from 'mongoose';
 
 const schemas = {
     ...User,
     ...Test,
-    ...Category
+    ...Category,
+    ...Article,
+    ...Comment,
+    ...Tag
 };
 
 const models = {};
