@@ -1,5 +1,5 @@
 import setRoutes from 'routes';
-import dbConfig from 'dbConfig';
+import database from 'database';
 import createServerREST from 'serverRest';
 import ServerWS from 'serverWs';
 import log from 'util/logger';
@@ -17,7 +17,7 @@ async function Application() {
         );
     new ServerWS();
     setRoutes(router);
-    dbConfig();
+    database();
     return router;
 }
 
