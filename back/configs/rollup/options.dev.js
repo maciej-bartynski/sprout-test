@@ -4,7 +4,7 @@ import plugins from './plugins';
 export default {
     input: 'configs/rollup/runwatch.js',
     output: {
-        file: 'build/build.js',
+        file: 'build/watch.js',
         format: 'cjs',
     },
     plugins,

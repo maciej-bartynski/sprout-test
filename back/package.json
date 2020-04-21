@@ -4,11 +4,11 @@
   "description": "backend",
   "main": "index.js",
   "scripts": {
-    "watch:server": "rollup --config configs/rollup.config.dev.js --watch",
+    "watch:server": "env IS_PRODUCTION='false' rollup --config configs/rollup.config.dev.js --watch",
     "build:server": "rollup --config configs/rollup.config.prod.js",
     "build:seed": "rollup --config configs/rollup.config.seed.js",
-    "start:seed": "node src/database/seed/runme.js",
-    "start:node": "node src/database/seed/runme.js",
+    "start:seed": "env IS_PRODUCTION='false' node src/database/seed/runme.js",
+    "start:node": "env IS_PRODUCTION='false' node src/database/seed/runme.js",
     "lintr:src": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src",
     "prttr:src": "prettier --config configs/prettier.config.js --write src/**/*.js"
   },
@@ -54,7 +54,7 @@
   "lint-staged": {
     "*.js": [
       "npm run prettier",
-      "npm run lint", 
+      "npm run lint",
       "git add"
     ]
   },
