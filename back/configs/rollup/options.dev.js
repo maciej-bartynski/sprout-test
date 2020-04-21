@@ -2,7 +2,7 @@ import external from './external';
 import plugins from './plugins';
 
 export default {
-    input: 'src/index.js',
+    input: 'configs/rollup/runwatch.js',
     output: {
         file: 'build/build.js',
         format: 'cjs',

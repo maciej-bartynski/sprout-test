@@ -36,4 +36,6 @@ function runSeeder() {
     runDatabase(seedDb);
 }
 
-runSeeder();
+export default runSeeder;
+
+//runSeeder();

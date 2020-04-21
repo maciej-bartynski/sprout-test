@@ -4,13 +4,13 @@
   "description": "backend",
   "main": "index.js",
   "scripts": {
-    "watch": "rollup --config configs/rollup.config.dev.js --watch",
-    "build": "rollup --config configs/rollup.config.prod.js",
+    "watch:server": "rollup --config configs/rollup.config.dev.js --watch",
+    "build:server": "rollup --config configs/rollup.config.prod.js",
     "build:seed": "rollup --config configs/rollup.config.seed.js",
-    "start:node": "node build/build.js",
-    "start:rollup": "rollup --config configs/rollup.config.dev.js",
-    "lint": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src",
-    "prettier": "prettier --config configs/prettier.config.js --write src/**/*.js"
+    "start:seed": "node src/database/seed/runme.js",
+    "start:node": "node src/database/seed/runme.js",
+    "lintr:src": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src",
+    "prttr:src": "prettier --config configs/prettier.config.js --write src/**/*.js"
   },
   "keywords": [
     "backend",

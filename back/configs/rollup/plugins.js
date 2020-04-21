@@ -10,7 +10,7 @@ const plugins = [
     babel(babelrc),
     resolve(),
     commonjs(),
-    uglify(),
+    //uglify(),
     includePaths({ paths: ["./src"] }),
     watch(),
 ];

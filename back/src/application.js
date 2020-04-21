@@ -4,6 +4,9 @@ import createServerREST from 'serverRest';
 import ServerWS from 'serverWs';
 import log from 'util/logger';
 import determineWebaddress from 'serverRest/modules/determineWebaddress';
+import { config } from 'dotenv';
+import 'colors';
+config();
 
 async function Application() {
     let router = await createServerREST();
@@ -21,5 +24,4 @@ async function Application() {
     return router;
 }
 
-module.exports = Application;
 export default Application;
