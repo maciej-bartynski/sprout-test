@@ -41,7 +41,7 @@ const routes = (router) => {
 
     router.post('/api/category/create', checkRequestAuthcookie, categoryCreate);
     router.get('/api/category/read/:categoryId', categoryRead);
-    router.get('/api/category/read/all', categoryReadAll);
+    router.get('/api/category/read-all', categoryReadAll);
     router.put(
         '/api/category/update/:categoryId',
         checkRequestAuthcookie,
