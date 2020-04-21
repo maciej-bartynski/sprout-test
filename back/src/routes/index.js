@@ -4,8 +4,15 @@ import category from './category';
 import article from './article';
 import tag from './tag';
 import comment from './comment';
+import user from './user';
 
-const { signup, signin, signout, checkRequestAuthcookie } = auth;
+const {
+    signup,
+    signin,
+    signout,
+    checkRequestAuthcookie,
+    isUserAuthorised
+} = auth;
 const {
     categoryCreate,
     categoryUpdate,
@@ -29,6 +36,7 @@ const {
     commentDelete,
     getComment
 } = comment;
+const { userUpdate, userRead, userReadAll, getUser } = user;
 const { test: test_controller, path: test_path } = test;
 
 const routes = (router) => {
@@ -38,6 +46,16 @@ const routes = (router) => {
     router.post('/api/signup', signup);
     router.post('/api/signin', signin);
     router.get('/api/signout', signout);
+
+    router.get('/api/user/read/:userId', userRead);
+    router.get('/api/user/read-all', userReadAll);
+    router.put(
+        '/api/user/update/:userId',
+        checkRequestAuthcookie,
+        isUserAuthorised,
+        userUpdate
+    );
+    router.param('userId', getUser);
 
     router.post('/api/category/create', checkRequestAuthcookie, categoryCreate);
     router.get('/api/category/read/:categoryId', categoryRead);
