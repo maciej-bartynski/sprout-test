@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-import populate from './populate';
+import { config } from 'dotenv';
+config();
 
-export default () => {
+export default (seedOptionalCallback = () => {}) => {
     mongoose
         .connect(process.env.DATABASE, {
             useNewUrlParser: true,
@@ -9,6 +10,6 @@ export default () => {
         })
         .then((data) => {
             console.log(`MONGODB. Database connected. ${data}`);
-            populate();
+            seedOptionalCallback();
         });
 };

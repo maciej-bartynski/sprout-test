@@ -6,9 +6,10 @@
   "scripts": {
     "watch": "rollup --config configs/rollup.config.dev.js --watch",
     "build": "rollup --config configs/rollup.config.prod.js",
+    "build:seed": "rollup --config configs/rollup.config.seed.js",
     "start:node": "node build/build.js",
     "start:rollup": "rollup --config configs/rollup.config.dev.js",
-    "lint": "eslint --config configs/eslint.config.js src",
+    "lint": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src",
     "prettier": "prettier --config configs/prettier.config.js --write src/**/*.js"
   },
   "keywords": [
