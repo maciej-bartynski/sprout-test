@@ -4,9 +4,9 @@ const fs = require('fs');
 
 const Application = async () => {
     const router = await require('./back/build/build')();
-    const htmlFilePath = path.join(__dirname, 'frontTest', 'index.html');
-    const cssFilePath = path.join(__dirname, 'frontTest', 'index.css');
-    const jsFilePath = path.join(__dirname, 'frontTest', 'index.js');
+    const htmlFilePath = path.join(__dirname, 'surface/build', 'index.html');
+    const cssFilePath = path.join(__dirname, 'surface/build', 'index.css');
+    const jsFilePath = path.join(__dirname, 'surface/build', 'index.js');
     try {
         const cssFile = fs.readFileSync(cssFilePath);
         const jsFile = fs.readFileSync(jsFilePath);
