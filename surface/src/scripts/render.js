@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Switch, Route } from 'react-router-dom';
-import Signin from './RouteComponents/Signin';
-import Signup from './RouteComponents/Signup';
-import Home from './RouteComponents/Home';
-import Navigation from './Components/Navigation';
+import Signin from '../RouteComponents/Signin';
+import Signup from '../RouteComponents/Signup';
+import Home from '../RouteComponents/Home';
+import Navigation from '../Components/Navigation';
 
 const webSocket = new WebSocket(`ws://localhost:8080`);
 
-const App = () => {
+const App_ = () => {
     return <BrowserRouter>
         <Navigation />
         <Switch>
@@ -30,4 +30,4 @@ const App = () => {
     </BrowserRouter>
 }
 
-ReactDOM.render(<App />, document.querySelector('#react-root-container'));
+ReactDOM.render(<App_ />, document.querySelector('#react-root-container'));

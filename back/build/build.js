@@ -870,79 +870,7 @@ schema.methods = {
     }
   }
 };
-var User = defineProperty({}, name, schema); // const user = new Schema(
-//     {
-//         name: {
-//             type: String,
-//             trim: true,
-//             required: true,
-//             maxlength: 32
-//         },
-//         email: {
-//             type: String,
-//             trim: true,
-//             required: true,
-//             unique: true
-//         },
-//         hashed_password: {
-//             type: String,
-//             required: true
-//         },
-//         about: {
-//             type: String,
-//             trim: true,
-//             default: 'Another broken soul.'
-//         },
-//         salt: String
-//     },
-//     {
-//         timestamps: true
-//     }
-// );
-// const setPass = function (password) {
-//     this._password = password;
-//     this.salt = uuidv1();
-//     this.hashed_password = this.encryptPassword(this._password);
-// };
-// const getPass = function () {
-//     return this._password;
-// };
-// user.virtual('password').set(setPass).get(getPass);
-// user.methods = {
-//     authenticate: function (plainText) {
-//         return this.encryptPassword(plainText) === this.hashed_password;
-//     },
-//     encryptPassword: function (password) {
-//         if (!password) return null;
-//         try {
-//             return crypto
-//                 .createHmac('sha1', this.salt)
-//                 .update(password)
-//                 .digest('hex');
-//         } catch (e) {
-//             return null;
-//         }
-//     }
-// };
-// export default {
-//     User: user
-// };
-
-var Schema = mongoose__default.Schema;
-
-var test = new Schema({
-  counter: {
-    type: Number,
-    "default": 0
-  },
-  staticId: {
-    type: String,
-    "default": 'some-test-string'
-  }
-});
-var Test = {
-  Test: test
-};
+var User = defineProperty({}, name, schema);
 
 var options$1 = Object.freeze({
   timestamps: true
@@ -1063,7 +991,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-var schemas = _objectSpread({}, User, {}, Test, {}, Category, {}, Article, {}, Comment, {}, Tag);
+var schemas = _objectSpread({}, User, {}, Category, {}, Article, {}, Comment, {}, Tag);
 
 var models = {};
 
@@ -1411,7 +1339,7 @@ var auth = {
 
 var path = '/test';
 
-var test$1 = (function (_, res) {
+var test = (function (_, res) {
   return res.status(200).json({
     success: true,
     msg: 'This is test route',
@@ -1419,8 +1347,8 @@ var test$1 = (function (_, res) {
   });
 });
 
-var test$2 = {
-  test: test$1,
+var test$1 = {
+  test: test,
   path: path
 };
 
@@ -1628,8 +1556,8 @@ var userUpdate$1 = user.userUpdate,
     userRead$1 = user.userRead,
     userReadAll$1 = user.userReadAll,
     getUser$1 = user.getUser;
-var test_controller = test$2.test,
-    test_path = test$2.path;
+var test_controller = test$1.test,
+    test_path = test$1.path;
 
 var routes = function routes(router) {
   if (process.env.IS_PRODUCTION === 'false') router.get(test_path, test_controller);
@@ -2426,22 +2354,6 @@ function _createClass(Constructor, protoProps, staticProps) {
 
 var createClass = _createClass;
 
-var Schema$1 = mongoose__default.Schema;
-
-var test$3 = new Schema$1({
-  counter: {
-    type: Number,
-    "default": 0
-  },
-  staticId: {
-    type: String,
-    "default": 'some-test-string'
-  }
-});
-var Test$1 = {
-  Test: test$3
-};
-
 var ServerWs = /*#__PURE__*/function () {
   function ServerWs() {
     classCallCheck(this, ServerWs);
@@ -2456,68 +2368,67 @@ var ServerWs = /*#__PURE__*/function () {
 
   createClass(ServerWs, [{
     key: "__manageCounter",
-    value: function __manageCounter(counter) {
-      var _this = this;
-
-      Test$1.findOne({
-        staticId: 'some-test-string'
-      }, function (err, test) {
-        if (err) {
-          console.log('MONGODB. Test model searching error.');
-          return;
-        }
-
-        if (!test) {
-          var _test = new Test$1({
-            counter: 0
-          });
-
-          _test.save(function (err) {
-            if (err) {
-              console.log('MONGODB. Test model population error.');
-              return;
-            }
-
-            console.log('MONGODB. Test model populated.');
-          });
-
-          return;
-        }
-
-        test.counter = counter === 'add' ? test.counter + 1 : counter === 'remove' ? test.counter - 1 : test.counter;
-        test.save(function (err, test) {
-          if (err || !test) {
-            Object.keys(_this.__CONNECTIONS).forEach(function (key) {
-              var connectionObj = _this.__CONNECTIONS[key] || {};
-              connectionObj.connection ? connectionObj.connection.send(JSON.stringify({
-                counter: 'Something went wrong on server side.'
-              })) : null;
-            });
-          }
-
-          Object.keys(_this.__CONNECTIONS).forEach(function (key) {
-            var connectionObj = _this.__CONNECTIONS[key] || {};
-            connectionObj.connection ? connectionObj.connection.send(JSON.stringify(test)) : null;
-          });
-        });
-      });
+    value: function __manageCounter(counter) {// Test.findOne({ staticId: 'some-test-string' }, (err, test) => {
+      //     if (err) {
+      //         console.log('MONGODB. Test model searching error.');
+      //         return;
+      //     }
+      //     if (!test) {
+      //         const test = new Test({ counter: 0 });
+      //         test.save((err) => {
+      //             if (err) {
+      //                 console.log('MONGODB. Test model population error.');
+      //                 return;
+      //             }
+      //             console.log('MONGODB. Test model populated.');
+      //         });
+      //         return;
+      //     }
+      //     test.counter =
+      //         counter === 'add'
+      //             ? test.counter + 1
+      //             : counter === 'remove'
+      //             ? test.counter - 1
+      //             : test.counter;
+      //     test.save((err, test) => {
+      //         if (err || !test) {
+      //             Object.keys(this.__CONNECTIONS).forEach((key) => {
+      //                 const connectionObj = this.__CONNECTIONS[key] || {};
+      //                 connectionObj.connection
+      //                     ? connectionObj.connection.send(
+      //                           JSON.stringify({
+      //                               counter:
+      //                                   'Something went wrong on server side.'
+      //                           })
+      //                       )
+      //                     : null;
+      //             });
+      //         }
+      //         Object.keys(this.__CONNECTIONS).forEach((key) => {
+      //             const connectionObj = this.__CONNECTIONS[key] || {};
+      //             connectionObj.connection
+      //                 ? connectionObj.connection.send(JSON.stringify(test))
+      //                 : null;
+      //         });
+      //     });
+      // });
     }
   }, {
     key: "__configServer",
     value: function __configServer() {
-      var _this2 = this;
+      var _this = this;
 
       this.__SERVER.on('connection', function (connection) {
         var connectionObj = {
           connection: connection,
           id: new Date().getTime()
         };
-        _this2.__CONNECTIONS[connectionObj.id] = connectionObj;
+        _this.__CONNECTIONS[connectionObj.id] = connectionObj;
         connection.on('message', function (incoming) {
-          _this2.__manageCounter(incoming);
+          _this.__manageCounter(incoming);
         });
         connection.on('close', function () {
-          delete _this2.__CONNECTIONS[connectionObj.id];
+          delete _this.__CONNECTIONS[connectionObj.id];
         });
       });
     }

@@ -1,5 +1,4 @@
 import { Server as WebSocketServerConstructor } from 'ws';
-import Test from './../database/models/test';
 
 class ServerWs {
     constructor() {
@@ -10,53 +9,53 @@ class ServerWs {
     }
 
     __manageCounter(counter) {
-        Test.findOne({ staticId: 'some-test-string' }, (err, test) => {
-            if (err) {
-                console.log('MONGODB. Test model searching error.');
-                return;
-            }
+        // Test.findOne({ staticId: 'some-test-string' }, (err, test) => {
+        //     if (err) {
+        //         console.log('MONGODB. Test model searching error.');
+        //         return;
+        //     }
 
-            if (!test) {
-                const test = new Test({ counter: 0 });
-                test.save((err) => {
-                    if (err) {
-                        console.log('MONGODB. Test model population error.');
-                        return;
-                    }
-                    console.log('MONGODB. Test model populated.');
-                });
-                return;
-            }
+        //     if (!test) {
+        //         const test = new Test({ counter: 0 });
+        //         test.save((err) => {
+        //             if (err) {
+        //                 console.log('MONGODB. Test model population error.');
+        //                 return;
+        //             }
+        //             console.log('MONGODB. Test model populated.');
+        //         });
+        //         return;
+        //     }
 
-            test.counter =
-                counter === 'add'
-                    ? test.counter + 1
-                    : counter === 'remove'
-                    ? test.counter - 1
-                    : test.counter;
+        //     test.counter =
+        //         counter === 'add'
+        //             ? test.counter + 1
+        //             : counter === 'remove'
+        //             ? test.counter - 1
+        //             : test.counter;
 
-            test.save((err, test) => {
-                if (err || !test) {
-                    Object.keys(this.__CONNECTIONS).forEach((key) => {
-                        const connectionObj = this.__CONNECTIONS[key] || {};
-                        connectionObj.connection
-                            ? connectionObj.connection.send(
-                                  JSON.stringify({
-                                      counter:
-                                          'Something went wrong on server side.'
-                                  })
-                              )
-                            : null;
-                    });
-                }
-                Object.keys(this.__CONNECTIONS).forEach((key) => {
-                    const connectionObj = this.__CONNECTIONS[key] || {};
-                    connectionObj.connection
-                        ? connectionObj.connection.send(JSON.stringify(test))
-                        : null;
-                });
-            });
-        });
+        //     test.save((err, test) => {
+        //         if (err || !test) {
+        //             Object.keys(this.__CONNECTIONS).forEach((key) => {
+        //                 const connectionObj = this.__CONNECTIONS[key] || {};
+        //                 connectionObj.connection
+        //                     ? connectionObj.connection.send(
+        //                           JSON.stringify({
+        //                               counter:
+        //                                   'Something went wrong on server side.'
+        //                           })
+        //                       )
+        //                     : null;
+        //             });
+        //         }
+        //         Object.keys(this.__CONNECTIONS).forEach((key) => {
+        //             const connectionObj = this.__CONNECTIONS[key] || {};
+        //             connectionObj.connection
+        //                 ? connectionObj.connection.send(JSON.stringify(test))
+        //                 : null;
+        //         });
+        //     });
+        // });
     }
 
     __configServer() {

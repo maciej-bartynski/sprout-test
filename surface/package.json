@@ -4,9 +4,9 @@
   "description": "surface - buildpack of react application, intended to be used on top of sprout project.",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "watch": "webpack --watch --config webpack.config.js",
-    "start": "webpack-dev-server --config webpack.config.js"
+    "build": "webpack --config configs/webpack.config.js",
+    "watch": "webpack --watch --config configs/webpack.config.js",
+    "start": "webpack-dev-server --config configs/webpack.config.js"
   },
   "keywords": [
     "frontend",
