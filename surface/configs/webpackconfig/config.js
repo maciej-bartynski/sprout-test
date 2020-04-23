@@ -7,7 +7,6 @@ const plugins = require('./plugins');
 module.exports = async () => {
     return {
         entry: path.join(__dirname, '../../src/templates', 'index.js'),
-        context: path.resolve(__dirname, '../../src'),
         output: {
             filename: 'index.js',
             publicPath: "/",
@@ -16,9 +15,16 @@ module.exports = async () => {
         mode: 'development',
         devtool: 'inline-source-map',
         devServer: await devServer,
-        module: { 
+        module: {
             rules
         },
         plugins,
+        resolve: {
+            alias: {
+                src: path.resolve(__dirname, '../../src'),
+                Components: path.resolve(__dirname, '../../src/Components'),
+                RouteComponents: path.resolve(__dirname, '../../src/RouteComponents'),
+            }
+        },
     }
 }

@@ -3,7 +3,8 @@ const path = require('path');
 const fs = require('fs');
 
 const Application = async () => {
-    const router = await require('./back/build/build')();
+    const { router, app } = await require('./back/build/build')();
+    //app.use('/static', express.static('static'));
     const htmlFilePath = path.join(__dirname, 'surface/build', 'index.html');
     const cssFilePath = path.join(__dirname, 'surface/build', 'index.css');
     const jsFilePath = path.join(__dirname, 'surface/build', 'index.js');

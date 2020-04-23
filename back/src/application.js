@@ -9,8 +9,8 @@ import 'colors';
 config();
 
 async function Application() {
-    let router = await createServerREST();
-    if (!router) throw new Error('APPLICATION. Failure: there is no router.');
+    let exposed = await createServerREST();
+    if (!exposed || !exposed.router()) throw new Error('APPLICATION. Failure: there is no router.');
     else
         log.frame(
             `Server REST available at: ${determineWebaddress
@@ -19,9 +19,12 @@ async function Application() {
             'blue'
         );
     new ServerWS();
-    setRoutes(router);
+    setRoutes(exposed.router());
     database();
-    return router;
+    return {
+        router: exposed.router(),
+        app: exposed.app()
+    };
 }
 
 export default Application;

@@ -44,7 +44,7 @@ async function createServerREST() {
             expressApp.expose.setRouterAgain();
 
             return serverTestSuccess()
-                ? expressApp.get().router()
+                ? expressApp.get()
                 : recursivelyCreateAndTest(attempts + 1);
         }
 

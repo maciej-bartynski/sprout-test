@@ -1,1 +1,1 @@
-import '../scripts/render';
+import 'src/scripts/render';
