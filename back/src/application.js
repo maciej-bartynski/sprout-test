@@ -8,23 +8,35 @@ import { config } from 'dotenv';
 import 'colors';
 config();
 
+const fail = (componentName) => {
+    log.fail(`[src/application]. Failure: there is no ${componentName}.`);
+    throw new Error(`Application failure: there is no ${componentName}.`);
+};
+
+const success = () => {
+    log.frame(
+        `Server REST available at: ${determineWebaddress.get().webaddress()}`,
+        'blue'
+    );
+};
+
 async function Application() {
-    let exposed = await createServerREST();
-    if (!exposed || !exposed.router()) throw new Error('APPLICATION. Failure: there is no router.');
-    else
-        log.frame(
-            `Server REST available at: ${determineWebaddress
-                .get()
-                .webaddress()}`,
-            'blue'
-        );
-    new ServerWS();
-    setRoutes(exposed.router());
+    const serverRestModuleAPI = await createServerREST();
+    const components = Object.freeze({
+        router: serverRestModuleAPI.router(),
+        app: serverRestModuleAPI.app(),
+        setStaticContentPath: serverRestModuleAPI.setStaticContentPath,
+        setPublicContentPath: serverRestModuleAPI.setPublicContentPath,
+        setDocumentsContentPath: serverRestModuleAPI.setDocumentsContentPath,
+        setBuildsContentPath: serverRestModuleAPI.setBuildsContentPath
+    });
+    if (!components.router) fail('router');
+    if (!components.app) fail('app');
+    success();
+    setRoutes(components.router);
     database();
-    return {
-        router: exposed.router(),
-        app: exposed.app()
-    };
+    new ServerWS();
+    return components;
 }
 
 export default Application;

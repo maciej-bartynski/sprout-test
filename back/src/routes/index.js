@@ -43,64 +43,64 @@ const routes = (router) => {
     if (process.env.IS_PRODUCTION === 'false')
         router.get(test_path, test_controller);
 
-    router.post('/api/signup', signup);
-    router.post('/api/signin', signin);
-    router.get('/api/signout', signout);
+    router.post('/signup', signup);
+    router.post('/signin', signin);
+    router.get('/signout', signout);
 
-    router.get('/api/user/read/:userId', userRead);
-    router.get('/api/user/read-all', userReadAll);
+    router.get('/user/read/:userId', userRead);
+    router.get('/user/read-all', userReadAll);
     router.put(
-        '/api/user/update/:userId',
+        '/user/update/:userId',
         checkRequestAuthcookie,
         isUserAuthorised,
         userUpdate
     );
     router.param('userId', getUser);
 
-    router.post('/api/category/create', checkRequestAuthcookie, categoryCreate);
-    router.get('/api/category/read/:categoryId', categoryRead);
-    router.get('/api/category/read-all', categoryReadAll);
+    router.post('/category/create', checkRequestAuthcookie, categoryCreate);
+    router.get('/category/read/:categoryId', categoryRead);
+    router.get('/category/read-all', categoryReadAll);
     router.put(
-        '/api/category/update/:categoryId',
+        '/category/update/:categoryId',
         checkRequestAuthcookie,
         categoryUpdate
     );
     router.delete(
-        '/api/category/delete/:categoryId',
+        '/category/delete/:categoryId',
         checkRequestAuthcookie,
         categoryDelete
     );
     router.param('categoryId', getCategory);
 
-    router.post('/api/article/create', checkRequestAuthcookie, articleCreate);
-    router.get('/api/article/read/:articleId', articleRead);
+    router.post('/article/create', checkRequestAuthcookie, articleCreate);
+    router.get('/article/read/:articleId', articleRead);
     router.put(
-        '/api/article/update/:articleId',
+        '/article/update/:articleId',
         checkRequestAuthcookie,
         articleUpdate
     );
     router.delete(
-        '/api/article/delete/:articleId',
+        '/article/delete/:articleId',
         checkRequestAuthcookie,
         articleDelete
     );
     router.param('articleId', getArticle);
 
-    router.post('/api/tag/create', checkRequestAuthcookie, tagCreate);
-    router.get('/api/tag/read/:tagId', tagRead);
-    router.put('/api/tag/update/:tagId', checkRequestAuthcookie, tagUpdate);
-    router.delete('/api/tag/delete/:tagId', checkRequestAuthcookie, tagDelete);
+    router.post('/tag/create', checkRequestAuthcookie, tagCreate);
+    router.get('/tag/read/:tagId', tagRead);
+    router.put('/tag/update/:tagId', checkRequestAuthcookie, tagUpdate);
+    router.delete('/tag/delete/:tagId', checkRequestAuthcookie, tagDelete);
     router.param('tagId', getTag);
 
-    router.post('/api/comment/create', checkRequestAuthcookie, commentCreate);
-    router.get('/api/comment/read/:commentId', commentRead);
+    router.post('/comment/create', checkRequestAuthcookie, commentCreate);
+    router.get('/comment/read/:commentId', commentRead);
     router.put(
-        '/api/comment/update/:commentId',
+        '/comment/update/:commentId',
         checkRequestAuthcookie,
         commentUpdate
     );
     router.delete(
-        '/api/comment/delete/:commentId',
+        '/comment/delete/:commentId',
         checkRequestAuthcookie,
         commentDelete
     );

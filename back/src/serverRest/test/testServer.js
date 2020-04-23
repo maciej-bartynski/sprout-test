@@ -8,7 +8,7 @@ const TestServer = function (name) {
     this.__sendTestRequest = function () {
         const { state, required } = this;
         const { usePackage } = required;
-        const testAddress = required.webaddress() + state.path;
+        const testAddress = required.webaddress() + '/api' + state.path;
         this.logger(`Server test attempt on "${testAddress}" path.`);
 
         let connectionTimeout = null;

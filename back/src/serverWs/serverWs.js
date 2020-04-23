@@ -14,7 +14,6 @@ class ServerWs {
         //         console.log('MONGODB. Test model searching error.');
         //         return;
         //     }
-
         //     if (!test) {
         //         const test = new Test({ counter: 0 });
         //         test.save((err) => {
@@ -26,14 +25,12 @@ class ServerWs {
         //         });
         //         return;
         //     }
-
         //     test.counter =
         //         counter === 'add'
         //             ? test.counter + 1
         //             : counter === 'remove'
         //             ? test.counter - 1
         //             : test.counter;
-
         //     test.save((err, test) => {
         //         if (err || !test) {
         //             Object.keys(this.__CONNECTIONS).forEach((key) => {

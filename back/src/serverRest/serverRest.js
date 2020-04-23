@@ -43,6 +43,8 @@ async function createServerREST() {
             const { serverTestSuccess } = testServer.get();
             expressApp.expose.setRouterAgain();
 
+            console.log('WHAT I HAGE, ', expressApp.get().router());
+
             return serverTestSuccess()
                 ? expressApp.get()
                 : recursivelyCreateAndTest(attempts + 1);

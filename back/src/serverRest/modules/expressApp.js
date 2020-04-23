@@ -1,8 +1,7 @@
 import ModuleBuilder from './../module';
 import express from 'express';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import compression from 'compression';
+import middlewares from 'serverRest/middlewares';
+const { usePackages, useRootpath, rootPaths } = middlewares;
 
 const ExpressApp = function (name) {
     this.super(name);
@@ -29,18 +28,30 @@ const ExpressApp = function (name) {
 
     this.__useMiddlewares = function () {
         const { state } = this;
-        state.app.use(bodyParser.json());
-        state.app.use(cookieParser());
-        state.app.use(compression());
-        this.logger('Middlewares used.');
+        const middlewareNames = [];
+        Object.entries(usePackages).forEach(([name, pack]) => {
+            state.app.use(pack);
+            middlewareNames.push(name);
+        });
+        this.logger(
+            `Middlewares used: ${middlewareNames.join(', ') || 'none'}.`
+        );
     };
 
     this.__useRouting = function () {
-        const { state } = this;
-        state.app.use('/', (req, res, next) => {
-            state.router(req, res, next);
+        useRootpath.useApi(this);
+        const { api } = rootPaths;
+        this.logger(`Routing is set for ${api} path.`);
+    };
+
+    this.__setExternalMethods = function () {
+        this.setExpose({
+            setStaticContentPath: useRootpath.useStatic(this),
+            setPublicContentPath: useRootpath.usePublic(this),
+            setDocumentsContentPath: useRootpath.useDocuments(this),
+            setBuildsContentPath: useRootpath.useBuilds(this),
+            setRouterAgain: this.__setRouter.bind(this)
         });
-        this.logger('Routing is set for "/" path.');
     };
 
     this.__setExposedValues = function () {
@@ -48,7 +59,6 @@ const ExpressApp = function (name) {
         setExpose({
             app: state.app,
             router: state.router,
-            setRouterAgain: this.__setRouter.bind(this),
             attempts: state.attempts
         });
     };
@@ -58,6 +68,7 @@ const ExpressApp = function (name) {
         this.__setRouter();
         this.__useMiddlewares();
         this.__useRouting();
+        this.__setExternalMethods();
         this.__setExposedValues();
     };
 };

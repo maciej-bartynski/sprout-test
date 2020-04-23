@@ -1561,33 +1561,33 @@ var test_controller = test$1.test,
 
 var routes = function routes(router) {
   if (process.env.IS_PRODUCTION === 'false') router.get(test_path, test_controller);
-  router.post('/api/signup', signup$1);
-  router.post('/api/signin', signin$1);
-  router.get('/api/signout', signout$1);
-  router.get('/api/user/read/:userId', userRead$1);
-  router.get('/api/user/read-all', userReadAll$1);
-  router.put('/api/user/update/:userId', checkRequestAuthcookie$1, isUserAuthorised$1, userUpdate$1);
+  router.post('/signup', signup$1);
+  router.post('/signin', signin$1);
+  router.get('/signout', signout$1);
+  router.get('/user/read/:userId', userRead$1);
+  router.get('/user/read-all', userReadAll$1);
+  router.put('/user/update/:userId', checkRequestAuthcookie$1, isUserAuthorised$1, userUpdate$1);
   router.param('userId', getUser$1);
-  router.post('/api/category/create', checkRequestAuthcookie$1, categoryCreate$1);
-  router.get('/api/category/read/:categoryId', categoryRead$1);
-  router.get('/api/category/read-all', categoryReadAll$1);
-  router.put('/api/category/update/:categoryId', checkRequestAuthcookie$1, categoryUpdate$1);
-  router["delete"]('/api/category/delete/:categoryId', checkRequestAuthcookie$1, categoryDelete$1);
+  router.post('/category/create', checkRequestAuthcookie$1, categoryCreate$1);
+  router.get('/category/read/:categoryId', categoryRead$1);
+  router.get('/category/read-all', categoryReadAll$1);
+  router.put('/category/update/:categoryId', checkRequestAuthcookie$1, categoryUpdate$1);
+  router["delete"]('/category/delete/:categoryId', checkRequestAuthcookie$1, categoryDelete$1);
   router.param('categoryId', getCategory$1);
-  router.post('/api/article/create', checkRequestAuthcookie$1, articleCreate$1);
-  router.get('/api/article/read/:articleId', articleRead$1);
-  router.put('/api/article/update/:articleId', checkRequestAuthcookie$1, articleUpdate$1);
-  router["delete"]('/api/article/delete/:articleId', checkRequestAuthcookie$1, articleDelete$1);
+  router.post('/article/create', checkRequestAuthcookie$1, articleCreate$1);
+  router.get('/article/read/:articleId', articleRead$1);
+  router.put('/article/update/:articleId', checkRequestAuthcookie$1, articleUpdate$1);
+  router["delete"]('/article/delete/:articleId', checkRequestAuthcookie$1, articleDelete$1);
   router.param('articleId', getArticle$1);
-  router.post('/api/tag/create', checkRequestAuthcookie$1, tagCreate$1);
-  router.get('/api/tag/read/:tagId', tagRead$1);
-  router.put('/api/tag/update/:tagId', checkRequestAuthcookie$1, tagUpdate$1);
-  router["delete"]('/api/tag/delete/:tagId', checkRequestAuthcookie$1, tagDelete$1);
+  router.post('/tag/create', checkRequestAuthcookie$1, tagCreate$1);
+  router.get('/tag/read/:tagId', tagRead$1);
+  router.put('/tag/update/:tagId', checkRequestAuthcookie$1, tagUpdate$1);
+  router["delete"]('/tag/delete/:tagId', checkRequestAuthcookie$1, tagDelete$1);
   router.param('tagId', getTag$1);
-  router.post('/api/comment/create', checkRequestAuthcookie$1, commentCreate$1);
-  router.get('/api/comment/read/:commentId', commentRead$1);
-  router.put('/api/comment/update/:commentId', checkRequestAuthcookie$1, commentUpdate$1);
-  router["delete"]('/api/comment/delete/:commentId', checkRequestAuthcookie$1, commentDelete$1);
+  router.post('/comment/create', checkRequestAuthcookie$1, commentCreate$1);
+  router.get('/comment/read/:commentId', commentRead$1);
+  router.put('/comment/update/:commentId', checkRequestAuthcookie$1, commentUpdate$1);
+  router["delete"]('/comment/delete/:commentId', checkRequestAuthcookie$1, commentDelete$1);
   router.param('commentId', getComment$1);
 };
 
@@ -1915,6 +1915,118 @@ determineWebaddress.setRequired({
   protocol: undefined
 });
 
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+var arrayWithHoles = _arrayWithHoles;
+
+function _iterableToArrayLimit(arr, i) {
+  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+var iterableToArrayLimit = _iterableToArrayLimit;
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+var nonIterableRest = _nonIterableRest;
+
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+
+var slicedToArray = _slicedToArray;
+
+var usePackages = Object.freeze({
+  bodyParser: bodyParser.json(),
+  cookieParser: cookieParser(),
+  compression: compression()
+});
+
+var useRootpath = Object.freeze({
+  paths: {
+    api: "/api",
+    "static": "/static",
+    "public": "/public",
+    documents: "/documents",
+    builds: "/builds"
+  },
+  useApi: function useApi(expressAppModuleReference) {
+    var state = expressAppModuleReference.state;
+    state.app.use(this.paths.api, function (req, res, next) {
+      state.router(req, res, next);
+    });
+  },
+  useStatic: function useStatic(expressAppModuleReference) {
+    var _this = this;
+
+    var state = expressAppModuleReference.state;
+    return function (pathToStatic) {
+      return state.app.get(_this.paths["static"], express["static"](pathToStatic));
+    };
+  },
+  usePublic: function usePublic(expressAppModuleReference) {
+    var _this2 = this;
+
+    var state = expressAppModuleReference.state;
+    return function (pathToPublic) {
+      return state.app.get(_this2.paths["public"], express["static"](pathToPublic));
+    };
+  },
+  useDocuments: function useDocuments(expressAppModuleReference) {
+    var _this3 = this;
+
+    var state = expressAppModuleReference.state;
+    return function (pathToDocuments) {
+      return state.app.get(_this3.paths.documents, express["static"](pathToDocuments));
+    };
+  },
+  useBuilds: function useBuilds(expressAppModuleReference) {
+    var _this4 = this;
+
+    var state = expressAppModuleReference.state;
+    return function (pathToDocuments) {
+      return state.app.get(_this4.paths.builds, express["static"](pathToDocuments));
+    };
+  }
+});
+var rootPaths = useRootpath.paths;
+
+var middlewares = {
+  usePackages: usePackages,
+  useRootpath: useRootpath,
+  rootPaths: rootPaths
+};
+
+var usePackages$1 = middlewares.usePackages,
+    useRootpath$1 = middlewares.useRootpath,
+    rootPaths$1 = middlewares.rootPaths;
+
 var ExpressApp = function ExpressApp(name) {
   this["super"](name);
   this.state = {
@@ -1941,18 +2053,32 @@ var ExpressApp = function ExpressApp(name) {
 
   this.__useMiddlewares = function () {
     var state = this.state;
-    state.app.use(bodyParser.json());
-    state.app.use(cookieParser());
-    state.app.use(compression());
-    this.logger('Middlewares used.');
+    var middlewareNames = [];
+    Object.entries(usePackages$1).forEach(function (_ref) {
+      var _ref2 = slicedToArray(_ref, 2),
+          name = _ref2[0],
+          pack = _ref2[1];
+
+      state.app.use(pack);
+      middlewareNames.push(name);
+    });
+    this.logger("Middlewares used: ".concat(middlewareNames.join(", ") || 'none', "."));
   };
 
   this.__useRouting = function () {
-    var state = this.state;
-    state.app.use('/', function (req, res, next) {
-      state.router(req, res, next);
+    useRootpath$1.useApi(this);
+    var api = rootPaths$1.api;
+    this.logger("Routing is set for ".concat(api, " path."));
+  };
+
+  this.__setExternalMethods = function () {
+    this.setExpose({
+      setStaticContentPath: useRootpath$1.useStatic(this),
+      setPublicContentPath: useRootpath$1.usePublic(this),
+      setDocumentsContentPath: useRootpath$1.useDocuments(this),
+      setBuildsContentPath: useRootpath$1.useBuilds(this),
+      setRouterAgain: this.__setRouter.bind(this)
     });
-    this.logger('Routing is set for "/" path.');
   };
 
   this.__setExposedValues = function () {
@@ -1961,7 +2087,6 @@ var ExpressApp = function ExpressApp(name) {
     setExpose({
       app: state.app,
       router: state.router,
-      setRouterAgain: this.__setRouter.bind(this),
       attempts: state.attempts
     });
   };
@@ -1974,6 +2099,8 @@ var ExpressApp = function ExpressApp(name) {
     this.__useMiddlewares();
 
     this.__useRouting();
+
+    this.__setExternalMethods();
 
     this.__setExposedValues();
   };
@@ -2092,7 +2219,7 @@ var TestServer = function TestServer(name) {
     var state = this.state,
         required = this.required;
     var usePackage = required.usePackage;
-    var testAddress = required.webaddress() + state.path;
+    var testAddress = required.webaddress() + "/api" + state.path;
     this.logger("Server test attempt on \"".concat(testAddress, "\" path."));
     var connectionTimeout = null;
     return new Promise(function (res) {
@@ -2303,9 +2430,10 @@ function _createServerREST() {
                         case 25:
                           _testServer$get = testServer.get(), serverTestSuccess = _testServer$get.serverTestSuccess;
                           expressApp.expose.setRouterAgain();
-                          return _context.abrupt("return", serverTestSuccess() ? expressApp.get().router() : recursivelyCreateAndTest(attempts + 1));
+                          console.log('WHAT I HAGE, ', expressApp.get().router());
+                          return _context.abrupt("return", serverTestSuccess() ? expressApp.get() : recursivelyCreateAndTest(attempts + 1));
 
-                        case 28:
+                        case 29:
                         case "end":
                           return _context.stop();
                       }
@@ -2457,13 +2585,22 @@ var ServerWs = /*#__PURE__*/function () {
 
 dotenv.config();
 
+var fail$1 = function fail(componentName) {
+  log.fail("[src/application]. Failure: there is no ".concat(componentName, "."));
+  throw new Error("Application failure: there is no ".concat(componentName, "."));
+};
+
+var success = function success() {
+  log.frame("Server REST available at: ".concat(determineWebaddress.get().webaddress()), 'blue');
+};
+
 function Application() {
   return _Application.apply(this, arguments);
 }
 
 function _Application() {
   _Application = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-    var router;
+    var serverRestModuleAPI, components;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -2472,25 +2609,24 @@ function _Application() {
             return createServerREST();
 
           case 2:
-            router = _context.sent;
-
-            if (router) {
-              _context.next = 7;
-              break;
-            }
-
-            throw new Error('APPLICATION. Failure: there is no router.');
-
-          case 7:
-            log.frame("Server REST available at: ".concat(determineWebaddress.get().webaddress()), 'blue');
-
-          case 8:
-            new ServerWs();
-            routes(router);
+            serverRestModuleAPI = _context.sent;
+            components = Object.freeze({
+              router: serverRestModuleAPI.router(),
+              app: serverRestModuleAPI.app(),
+              setStaticContentPath: serverRestModuleAPI.setStaticContentPath,
+              setPublicContentPath: serverRestModuleAPI.setPublicContentPath,
+              setDocumentsContentPath: serverRestModuleAPI.setDocumentsContentPath,
+              setBuildsContentPath: serverRestModuleAPI.setBuildsContentPath
+            });
+            if (!components.router) fail$1('router');
+            if (!components.app) fail$1('app');
+            success();
+            routes(components.router);
             database();
-            return _context.abrupt("return", router);
+            new ServerWs();
+            return _context.abrupt("return", components);
 
-          case 12:
+          case 11:
           case "end":
             return _context.stop();
         }
