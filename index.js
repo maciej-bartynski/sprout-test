@@ -1,28 +1,41 @@
 require('dotenv').config();
+const serverPaths = require('./surface/server');
 const path = require('path');
 const fs = require('fs');
 
+const staticPath = serverPaths.usePublicpath.static;
+const publicPath = serverPaths.usePublicpath.public;
+const documsPath = serverPaths.usePublicpath.documents;
+const buildsPath = serverPaths.useBuildspath.build;
+const htmlDocPath = path.join(buildsPath, 'index.html');
+const cssFilePath = path.join(buildsPath, 'index.css');
+const jsBuildPath = path.join(buildsPath, 'index.js');
+
 const Application = async () => {
-    const { router, app } = await require('./back/build/build')();
-    //app.use('/static', express.static('static'));
-    const htmlFilePath = path.join(__dirname, 'surface/build', 'index.html');
-    const cssFilePath = path.join(__dirname, 'surface/build', 'index.css');
-    const jsFilePath = path.join(__dirname, 'surface/build', 'index.js');
+    const getAppComponents = require('./back/build/build');
+    const appComponents = await getAppComponents();
+    const {
+        router,
+        setStaticContentPath,
+        setPublicContentPath,
+        setDocumentsContentPath,
+        setBuildsContentPath
+    } = appComponents;
+
+    setStaticContentPath(staticPath);
+    setPublicContentPath(publicPath);
+    setDocumentsContentPath(documsPath);
+    setBuildsContentPath(buildsPath);
+
     try {
-        const cssFile = fs.readFileSync(cssFilePath);
-        const jsFile = fs.readFileSync(jsFilePath);
-        const htmlFile = fs.readFileSync(htmlFilePath);
-        if (cssFile && jsFile && htmlFile) {
-            router.get('/index.js', function (req, res) {
-                res.sendFile(jsFilePath);
-            });
-            router.get('/index.css', function (req, res) {
-                res.sendFile(cssFilePath);
-            });
-            router.get('*', function (req, res) {
-                return res.sendFile(htmlFilePath);
-            });
-        }
+        fs.readFileSync(cssFilePath);
+        fs.readFileSync(jsBuildPath);
+        fs.readFileSync(htmlDocPath);
+
+        router.get('*', function (req, res) {
+            return res.sendFile(htmlDocPath);
+        });
+
         console.log('SERVER REST TOP. Assets found. Server will serve assets on *, /index.js, /index.css routes.')
     } catch (e) {
         console.log('SERVER REST TOP. Assets not found.')

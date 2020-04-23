@@ -1,16 +1,20 @@
 require('dotenv').config()
 const path = require('path');
+const serverPaths = require('../../server');
+
+const contentBase = Object.entries(serverPaths.usePublicpath).map(entry => entry[1]);
+const assetsBase = serverPaths.useBuildspath.build;
 
 const config = (backend, proto) => {
     return {
         port: process.env.PORT_FRONTEND,
         index: 'index.html',
         publicPath: "/",
-        contentBase: path.join(__dirname, '../../static'),
+        contentBase: [...contentBase, assetsBase],
         https: proto,
         overlay: true,
         proxy: {
-            '/api': {
+            [serverPaths.useBackendapi.api]: {
                 target: backend,
                 secure: false,
                 changeOrigin: true,
@@ -30,8 +34,8 @@ module.exports = new Promise((resolve, reject) => {
         resolve(config(backendHTTP, false));
     }, 30000)
 
-    require('https').get(backendHTTPS, (respo) => {  
-        let data = "";    
+    require('https').get(backendHTTPS, (respo) => {
+        let data = "";
         respo.on('data', (chunk) => {
             data += chunk;
         });

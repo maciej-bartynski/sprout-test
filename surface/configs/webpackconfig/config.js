@@ -3,6 +3,7 @@ const path = require('path');
 const devServer = require('./devServ');
 const rules = require('./rules');
 const plugins = require('./plugins');
+const serverPaths = require('../../server');
 
 module.exports = async () => {
     return {
@@ -10,7 +11,7 @@ module.exports = async () => {
         output: {
             filename: 'index.js',
             publicPath: "/",
-            path: path.join(__dirname, '../..', 'build'),
+            path: serverPaths.useBuildspath.build,
         },
         mode: 'development',
         devtool: 'inline-source-map',
