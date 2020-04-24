@@ -54,4 +54,5 @@ async function createServerREST() {
     });
 }
 
-export default createServerREST;
+//export default createServerREST;
+export default () => {};

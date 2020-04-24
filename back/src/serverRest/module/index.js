@@ -92,4 +92,3 @@ Module.prototype.create = async function (...forUse) {
 };
 
 export default Module;
-///module.exports = Module;
