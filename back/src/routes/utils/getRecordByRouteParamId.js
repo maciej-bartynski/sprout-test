@@ -1,5 +1,5 @@
 import models from 'database/models';
-import log from 'util/logger';
+import log from 'priv_modules/logger';
 
 const getRecordByRouteParamId = (modelName) => (req, _, next, routeParam) => {
     const Model = models[modelName];

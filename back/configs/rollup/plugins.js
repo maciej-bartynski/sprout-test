@@ -11,7 +11,7 @@ const plugins = [
     resolve(),
     commonjs(),
     // uglify(),
-    includePaths({ paths: ["./src"] }),
+    includePaths({ paths: ["./src", "."] }),
     watch(),
 ];
 

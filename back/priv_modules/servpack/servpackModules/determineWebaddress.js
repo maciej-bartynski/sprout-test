@@ -1,7 +1,7 @@
 import ModuleBuilder from './servpack.module';
 
 const DetermineWebaddress = function () {
-    this.super("[SERVERPACK-WEBADDRESS]");
+    this.super('[SERVERPACK-WEBADDRESS]');
 
     this.__createModule = function () {
         const { setState, state } = this.context;
@@ -9,7 +9,7 @@ const DetermineWebaddress = function () {
         setState({
             webaddress
         });
-        this.logger(`Web address set to ${webaddress}`, "ok");
+        this.logger(`Web address set to ${webaddress}`, 'ok');
     };
 };
 

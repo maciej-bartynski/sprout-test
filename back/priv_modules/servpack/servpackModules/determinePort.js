@@ -1,7 +1,7 @@
 import ModuleBuilder from './servpack.module';
 
 const DeterminePort = function () {
-    this.super("[SERVERPACK-PORT]");
+    this.super('[SERVERPACK-PORT]');
 
     this.__setPort = function () {
         const { config, setState } = this.context;

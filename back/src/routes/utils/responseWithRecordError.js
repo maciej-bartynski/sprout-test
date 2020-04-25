@@ -1,4 +1,4 @@
-import log from 'util/logger';
+import log from 'priv_modules/logger';
 
 const responseWithRecordError = (e, res) => {
     const data = {

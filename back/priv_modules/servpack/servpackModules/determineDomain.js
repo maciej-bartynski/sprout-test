@@ -1,14 +1,14 @@
 import ModuleBuilder from './servpack.module';
 
 const DetermineDomain = function () {
-    this.super("[SERVPACK-DOMAIN]");
+    this.super('[SERVPACK-DOMAIN]');
 
     this.__setDomain = function () {
-        const { config, setState } = this.context;   
+        const { config, setState } = this.context;
         setState({
-            domain: config.domain.customer,
+            domain: config.domain.customer
         });
-        this.logger(`Domain is set: ${config.domain.customer}.`, "ok");
+        this.logger(`Domain is set: ${config.domain.customer}.`, 'ok');
     };
 
     this.__createModule = function () {

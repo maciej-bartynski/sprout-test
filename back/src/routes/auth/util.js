@@ -2,7 +2,7 @@ import expressJwt from 'express-jwt';
 import models from 'database/models';
 import { name } from 'database/models/User/name';
 import { config } from 'dotenv';
-import log from 'util/logger';
+import log from 'priv_modules/logger';
 config();
 
 const constants = Object.freeze({

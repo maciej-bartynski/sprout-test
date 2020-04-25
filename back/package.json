@@ -9,8 +9,8 @@
     "build:seed": "rollup --config configs/rollup.config.seed.js",
     "start:seed": "env IS_PRODUCTION='false' node src/database/seed/runme.js",
     "start:node": "env IS_PRODUCTION='false' node build/build.js",
-    "lintr:src": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src",
-    "prttr:src": "prettier --config configs/prettier.config.js --write src/**/*.js"
+    "lintr:src": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src priv_modules",
+    "prttr:src": "prettier --config configs/prettier.config.js --write src/**/*.js priv_modules/**/*.js"
   },
   "keywords": [
     "backend",

@@ -5,7 +5,7 @@ import seedArticles from './articles';
 import seedComments from './comments';
 import seedTags from './tags';
 import runDatabase from 'database';
-import log from 'util/logger';
+import log from 'priv_modules/logger';
 import 'colors';
 
 function runSeeder() {

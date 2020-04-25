@@ -8,7 +8,7 @@ class ServerWs {
         this.__configServer();
     }
 
-    __manageCounter(counter) {
+    __manageCounter(/*counter*/) {
         // Test.findOne({ staticId: 'some-test-string' }, (err, test) => {
         //     if (err) {
         //         console.log('MONGODB. Test model searching error.');
