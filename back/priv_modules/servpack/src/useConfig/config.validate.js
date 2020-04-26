@@ -1,4 +1,4 @@
-import configTemplate from './servpack.template';
+import configTemplate from './config.template';
 import log from 'priv_modules/logger';
 
 const mapCustomerValues = (config) => {
@@ -25,9 +25,9 @@ const mapCustomerValues = (config) => {
                 }" is set to default: "${this.default}".`
             );
             log.warn(`[servpack.mapping] ${e}.`);
-            this.customer =
-                this.customer === 'disabled' ? undefined : this.default;
         }
+        this.customer =
+            this.customer === 'disabled' ? undefined : this.customer;
     };
 
     return {
@@ -87,8 +87,10 @@ const mapCustomerValues = (config) => {
             validate: function () {
                 const valid =
                     this.customer instanceof this.type ||
-                    this.customer === this.default;
-                const fail = 'Certification key must be a buffer.';
+                    this.customer === this.default ||
+                    this.customer === undefined;
+                const fail =
+                    "Certification key must be a buffer, string 'disabled', or undefined (this falls back to default).";
                 return valid ? null : fail;
             }
         },
@@ -100,7 +102,8 @@ const mapCustomerValues = (config) => {
             validate: function () {
                 const valid =
                     this.customer instanceof this.type ||
-                    this.customer === this.default;
+                    this.customer === this.default ||
+                    this.customer === undefined;
                 const fail =
                     "Certification cert must be a buffer, string 'disabled', or undefined (this falls back to default).";
                 return valid ? null : fail;

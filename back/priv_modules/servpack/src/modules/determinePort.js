@@ -1,4 +1,4 @@
-import ModuleBuilder from './servpack.module';
+import ModuleBuilder from './moduleCreator';
 
 const DeterminePort = function () {
     this.super('[SERVERPACK-PORT]');

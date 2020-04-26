@@ -1,4 +1,4 @@
-import ModuleBuilder from './servpack.module';
+import ModuleBuilder from './moduleCreator';
 
 const DetermineProtocol = function () {
     this.super('[SERVPACK-PROTOCOL]');
@@ -7,13 +7,21 @@ const DetermineProtocol = function () {
         const { config } = this.context;
         const key = config.certification_key.customer;
         const cer = config.certification_cert.customer;
-        const isDisabled = key === 'disabled' || cer === 'disabled';
+        const isDisabled = !key || !cer;
         if (isDisabled) {
             this.logger('Certification is disabled.', 'info');
             return false;
         } else {
             return [cer, key];
         }
+    };
+
+    this.__checkHttpFlag = function () {
+        const { config } = this.context;
+        const protocol = config.protocol.customer;
+        if (protocol === 'http') return true;
+        if (protocol === 'https') return false;
+        throw new Error('Check protocol field in servpack.config');
     };
 
     this.__setHttps = function (certs) {
@@ -39,9 +47,10 @@ const DetermineProtocol = function () {
     };
 
     this.__createModule = async function () {
+        const forceHttp = this.__checkHttpFlag();
         const certFound = this.__handleCertFiles();
-        if (certFound) this.__setHttps(certFound);
-        else this.__setHttp(certFound);
+        if (certFound && !forceHttp) this.__setHttps(certFound);
+        else if (forceHttp) this.__setHttp(certFound);
     };
 };
 

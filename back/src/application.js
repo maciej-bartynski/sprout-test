@@ -4,7 +4,7 @@ import log from 'priv_modules/logger';
 import { config } from 'dotenv';
 import servpack from 'priv_modules/servpack';
 import sockpack from 'priv_modules/sockpack';
-import servpackConfig from 'configs/serverpack.config';
+import servpackConfig from 'configs/servpack.config';
 import sockpackConfig from 'configs/sockpack.config';
 import 'colors';
 config();
@@ -20,13 +20,16 @@ const success = (webaddress) => {
 
 async function Application() {
     try {
-        const serverWSocModuleAPI = await sockpack(sockpackConfig);
-        if (!serverWSocModuleAPI.server) fail('websocket');
         const serverRestModuleAPI = await servpack(servpackConfig);
         if (!serverRestModuleAPI.router) fail('router');
         if (!serverRestModuleAPI.app) fail('app');
         success(serverRestModuleAPI.webaddress);
         setRoutes(serverRestModuleAPI.router);
+        const serverWSocModuleAPI = await sockpack({
+            ...sockpackConfig,
+            httpServer: serverRestModuleAPI.server
+        });
+        if (!serverWSocModuleAPI.server) fail('websocket');
         database();
         return serverRestModuleAPI;
     } catch (e) {

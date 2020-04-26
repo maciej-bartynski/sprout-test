@@ -36,7 +36,7 @@ const config = {
         usePackages.bodyParser,
         usePackages.cookieParser,
         usePackages.compression,
-    ]
+    ],
 }
 
 export default config;

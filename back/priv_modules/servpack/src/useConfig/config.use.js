@@ -1,4 +1,4 @@
-import mapCustomerConfig from './servpack.mapping';
+import mapCustomerConfig from './config.validate';
 
 function useValidation(customerConfig) {
     const values = mapCustomerConfig(customerConfig);

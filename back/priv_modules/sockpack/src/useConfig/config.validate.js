@@ -33,6 +33,17 @@ const configValidate = (userConfig) => {
                 if (!valid) throw new Error(msg);
             }
         },
+        httpServer: {
+            default: configTemplate.httpServer,
+            value: null,
+            path: ['httpServer'],
+            get resolve() {
+                return resolve.bind(this);
+            },
+            validate: function () {
+                return true;
+            }
+        },
         onOpen: {
             default: configTemplate.onOpen,
             value: null,

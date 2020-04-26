@@ -1,4 +1,4 @@
-import ModuleBuilder from './servpack.module';
+import ModuleBuilder from './moduleCreator';
 
 const DetermineDomain = function () {
     this.super('[SERVPACK-DOMAIN]');

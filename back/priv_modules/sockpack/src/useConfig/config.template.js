@@ -2,6 +2,7 @@ import log from 'priv_modules/logger';
 
 export default {
     port: 8000,
+    httpServer: null,
     onOpen: async (connections, connection) => {
         const amount = Object.keys(connections).length;
         connection.send(

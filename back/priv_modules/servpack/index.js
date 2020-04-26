@@ -1,2 +1,1 @@
-import servpack from './serverpack.call';
-export default servpack;
+export { default } from './src/servpack';

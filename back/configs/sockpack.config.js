@@ -1,5 +1,6 @@
 export default {
     port: 8000,
+    httpServer: "This will be set in runtime!",
     onMessage: async (msg, connections) => {
         const { id: from, to, body } = msg;
         const unhandled = [];
