@@ -1,1 +1,1 @@
-export { default } from './sockpack.call';
+export { default } from './sockpack';

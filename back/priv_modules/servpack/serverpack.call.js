@@ -9,6 +9,7 @@ import testServer from './servpackModules/testServer';
 import log from 'priv_modules/logger';
 
 async function createServerREST(config) {
+    log.strong('SERVPACK start', 'blue');
     let mappedConfig = null;
 
     try {
@@ -48,6 +49,7 @@ async function createServerREST(config) {
         await nodeServer.create(servpack);
         await testServer.create(servpack);
         log.ok(`[servpack] All modules build.`);
+        log.strong('SERVPACK end', 'blue');
         return servpack.state;
     } catch (e) {
         log.fail(`[servpack] ${e}.`);
