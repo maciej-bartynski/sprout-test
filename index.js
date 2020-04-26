@@ -1,5 +1,5 @@
 require('dotenv').config();
-const serverPaths = require('./surface/server');
+const serverPaths = require('./sprout-frontend/server');
 const path = require('path');
 const fs = require('fs');
 
