@@ -921,79 +921,7 @@ schema.methods = {
         }
     }
 };
-var User = defineProperty({}, name, schema); // const user = new Schema(
-//     {
-//         name: {
-//             type: String,
-//             trim: true,
-//             required: true,
-//             maxlength: 32
-//         },
-//         email: {
-//             type: String,
-//             trim: true,
-//             required: true,
-//             unique: true
-//         },
-//         hashed_password: {
-//             type: String,
-//             required: true
-//         },
-//         about: {
-//             type: String,
-//             trim: true,
-//             default: 'Another broken soul.'
-//         },
-//         salt: String
-//     },
-//     {
-//         timestamps: true
-//     }
-// );
-// const setPass = function (password) {
-//     this._password = password;
-//     this.salt = uuidv1();
-//     this.hashed_password = this.encryptPassword(this._password);
-// };
-// const getPass = function () {
-//     return this._password;
-// };
-// user.virtual('password').set(setPass).get(getPass);
-// user.methods = {
-//     authenticate: function (plainText) {
-//         return this.encryptPassword(plainText) === this.hashed_password;
-//     },
-//     encryptPassword: function (password) {
-//         if (!password) return null;
-//         try {
-//             return crypto
-//                 .createHmac('sha1', this.salt)
-//                 .update(password)
-//                 .digest('hex');
-//         } catch (e) {
-//             return null;
-//         }
-//     }
-// };
-// export default {
-//     User: user
-// };
-
-var Schema = mongoose__default.Schema;
-
-var test = new Schema({
-    counter: {
-        type: Number,
-        default: 0
-    },
-    staticId: {
-        type: String,
-        default: 'some-test-string'
-    }
-});
-var Test = {
-    Test: test
-};
+var User = defineProperty({}, name, schema);
 
 var options$1 = Object.freeze({
     timestamps: true
@@ -1153,8 +1081,6 @@ function _objectSpread(target) {
 var schemas = _objectSpread(
     {},
     User,
-    {},
-    Test,
     {},
     Category,
     {},

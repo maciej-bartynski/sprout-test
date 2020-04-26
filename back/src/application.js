@@ -4,6 +4,7 @@ import ServerWS from 'serverWs';
 import log from 'priv_modules/logger';
 import { config } from 'dotenv';
 import servpack from 'priv_modules/servpack';
+import sockpack from 'priv_modules/sockpack';
 import servpackConfig from 'configs/serverpack.config';
 import 'colors';
 config();
@@ -24,7 +25,7 @@ async function Application() {
     success(serverRestModuleAPI.webaddress);
     setRoutes(serverRestModuleAPI.router);
     database();
-    new ServerWS();
+    sockpack();
     return serverRestModuleAPI;
 }
 

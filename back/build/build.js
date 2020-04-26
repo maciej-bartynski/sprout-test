@@ -9,15 +9,15 @@ var uuid = require('uuid');
 var jwt = _interopDefault(require('jsonwebtoken'));
 var expressJwt = _interopDefault(require('express-jwt'));
 var dotenv = require('dotenv');
-var path$1 = _interopDefault(require('path'));
-var fs = _interopDefault(require('fs'));
+var ws = require('ws');
 var express = _interopDefault(require('express'));
+var fs = _interopDefault(require('fs'));
+var http = _interopDefault(require('http'));
+var https = _interopDefault(require('https'));
+var path$1 = _interopDefault(require('path'));
 var bodyParser = _interopDefault(require('body-parser'));
 var cookieParser = _interopDefault(require('cookie-parser'));
 var compression = _interopDefault(require('compression'));
-var http = _interopDefault(require('http'));
-var https = _interopDefault(require('https'));
-var ws = require('ws');
 require('colors');
 
 function createCommonjsModule(fn, module) {
@@ -1603,859 +1603,6 @@ var database = (function () {
   });
 });
 
-function Module() {}
-
-Module.prototype = {
-  setState: function setState(obj) {
-    Object.assign(this.state, obj);
-  },
-  setRequired: function setRequired(obj) {
-    Object.assign(this.required, obj);
-  },
-  setExpose: function setExpose(obj) {
-    Object.assign(this.expose, obj);
-  }
-};
-
-Module.prototype["super"] = function (name) {
-  this.__name__ = name;
-  this.state = {};
-  this.required = {};
-  this.expose = {};
-  this.setState = this.setState.bind(this);
-  this.setExpose = this.setExpose.bind(this);
-  this.setRequired = this.setRequired.bind(this);
-};
-
-Module.prototype.binder = function (self) {
-  for (var key in self) {
-    if (typeof self[key] === 'function') {
-      self[key] = self[key].bind(self);
-    }
-  }
-};
-
-Module.prototype.__use = function () {
-  var required = this.required;
-
-  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
-  }
-
-  args.forEach(function (arg) {
-    Object.keys(required).forEach(function (requiredField) {
-      if (typeof required[requiredField] === 'function') return;
-      required[requiredField] = arg.get()[requiredField];
-    });
-  });
-};
-
-Module.prototype.__requiredCheck = function () {
-  var required = this.required;
-  Object.keys(required).forEach(function (requiredField) {
-    if (typeof required[requiredField] !== 'function') throw new Error("Missing required module field: ".concat(requiredField));
-  });
-};
-
-Module.prototype.__finalLogger = function () {
-  var exposedFields = [];
-  Object.keys(this.get()).forEach(function (field) {
-    exposedFields.push(field);
-  });
-  var msg = "".concat(this.__name__, ". Exposed fields: ").concat(exposedFields.join(', '), ".");
-  log.info(msg);
-};
-
-Module.prototype.get = function () {
-  var expose = this.expose;
-  var toReturn = {};
-
-  var _loop = function _loop(key) {
-    toReturn[key] = function () {
-      return expose[key];
-    };
-  };
-
-  for (var key in expose) {
-    _loop(key);
-  }
-
-  return toReturn;
-};
-
-Module.prototype.logger = function (info) {
-  var stat = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'msg';
-  var message = "".concat(this.__name__ || '(ANONYMOUS)', ". ").concat(info);
-  if (stat === 'warn') log.warn(message);
-  if (stat === 'fail') log.fail(message);
-  if (stat === 'ok') log.ok(message);
-  if (stat === 'msg') log.info(message);
-  if (stat === 'spec') log.strong(message);
-};
-
-Module.prototype.create = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-  var sectionMessage,
-      _args = arguments;
-  return regenerator.wrap(function _callee$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          sectionMessage = [this.__name__, 'start'];
-          log.section.apply(log, sectionMessage);
-
-          this.__use.apply(this, _args);
-
-          this.__requiredCheck();
-
-          _context.next = 6;
-          return this.__createModule();
-
-        case 6:
-          this.__finalLogger();
-
-          log.endsec.apply(log, sectionMessage);
-
-        case 8:
-        case "end":
-          return _context.stop();
-      }
-    }
-  }, _callee, this);
-}));
- ///module.exports = Module;
-
-var DetermineProtocol = function DetermineProtocol(name) {
-  this["super"](name);
-
-  this.__whenForceHttp = function () {
-    this.setState({
-      protocol: 'http',
-      cert: null,
-      key: null
-    });
-    this.logger('Protocol is forced to be set to http.', 'warn', 'info');
-  };
-
-  this.__whenCertificationFound = function (cert, key) {
-    this.setState({
-      protocol: 'https',
-      cert: cert,
-      key: key
-    });
-    this.logger('Files considered as certification found. Protocol is set to https.', 'ok', 'info');
-  };
-
-  this.__whenCertificationNotFound = function () {
-    this.setState({
-      protocol: 'http',
-      cert: null,
-      key: null,
-      forceHttp: true
-    });
-    this.logger('Files considered as certification not found. Protocol is set to http.');
-  };
-
-  this.__setProtocol = function () {
-    var state = this.state,
-        setState = this.setState;
-    setState({
-      cert: null,
-      key: null,
-      forceHttp: state.attempts >= 1
-    });
-
-    if (state.forceHttp) {
-      this.__whenForceHttp();
-
-      return;
-    }
-
-    var _process$env = process.env,
-        CERTIFICATE_FILE = _process$env.CERTIFICATE_FILE,
-        PRIVATE_KEY_FILE = _process$env.PRIVATE_KEY_FILE;
-    var key,
-        cert = null;
-
-    try {
-      key = fs.readFileSync(path$1.join(__dirname, '../cert', PRIVATE_KEY_FILE), 'utf8');
-      cert = fs.readFileSync(path$1.join(__dirname, '../cert', CERTIFICATE_FILE), 'utf8');
-    } catch (e) {
-      this.logger("Cannot read certification files: ".concat(e), 'warn', 'info');
-    }
-
-    if (key && cert) this.__whenCertificationFound(cert, key);else this.__whenCertificationNotFound();
-  };
-
-  this.__setAttempts = function () {
-    var setState = this.setState,
-        state = this.state;
-    setState({
-      attempts: state.attempts + 1
-    });
-  };
-
-  this.__setExposedValues = function () {
-    var setExpose = this.setExpose,
-        state = this.state;
-    setExpose({
-      protocol: state.protocol,
-      cert: state.cert,
-      key: state.key
-    });
-  };
-
-  this.__createModule = function () {
-    this.__setProtocol();
-
-    this.__setAttempts();
-
-    this.__setExposedValues();
-  };
-};
-
-DetermineProtocol.prototype = Object.create(Module.prototype);
-var determineProtocol = new DetermineProtocol('[protocol]');
-determineProtocol.setState({
-  protocol: '',
-  cert: null,
-  key: null,
-  forceHttp: false,
-  attempts: 0
-});
-
-var DeterminePort = function DeterminePort(name) {
-  this["super"](name);
-
-  this.__setPort = function () {
-    var PORT = process.env.PORT;
-    var port = PORT || 5000;
-    this.setState({
-      port: port
-    });
-    this.logger("Port determined: ".concat(this.state.port));
-  };
-
-  this.__setExposedValues = function () {
-    var state = this.state,
-        setExpose = this.setExpose;
-    setExpose({
-      port: state.port
-    });
-  };
-
-  this.__createModule = function () {
-    this.__setPort();
-
-    this.__setExposedValues();
-  };
-};
-
-DeterminePort.prototype = Object.create(Module.prototype);
-var determinePort = new DeterminePort('[port]');
-
-var DetermineDomain = function DetermineDomain(name) {
-  this["super"](name);
-
-  this.__setDomain = function () {
-    var required = this.required,
-        setState = this.setState,
-        state = this.state;
-    var DOMAIN = process.env.DOMAIN;
-    var localDomain = "localhost:".concat(required.port());
-    var domain = DOMAIN ? DOMAIN : localDomain;
-    setState({
-      domain: domain
-    });
-    this.logger("Domain is set: ".concat(state.domain, "."));
-  };
-
-  this.__setExposedValues = function () {
-    var setExpose = this.setExpose,
-        state = this.state;
-    setExpose({
-      domain: state.domain
-    });
-  };
-
-  this.__createModule = function () {
-    this.__setDomain();
-
-    this.__setExposedValues();
-  };
-};
-
-DetermineDomain.prototype = Object.create(Module.prototype);
-var determineDomain = new DetermineDomain('[domain]');
-determineDomain.setState({
-  domain: null
-});
-determineDomain.setRequired({
-  port: undefined
-});
-determineDomain.setExpose({});
-
-var DetermineWebaddress = function DetermineWebaddress(name) {
-  this["super"](name);
-
-  this.__createModule = function () {
-    var required = this.required,
-        setExpose = this.setExpose;
-    var webaddress = "".concat(required.protocol(), "://").concat(required.domain());
-    setExpose({
-      webaddress: webaddress
-    });
-    this.logger("Web address set to ".concat(webaddress));
-  };
-};
-
-DetermineWebaddress.prototype = Object.create(Module.prototype);
-var determineWebaddress = new DetermineWebaddress('[webaddress]');
-determineWebaddress.setRequired({
-  domain: undefined,
-  protocol: undefined
-});
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-var arrayWithHoles = _arrayWithHoles;
-
-function _iterableToArrayLimit(arr, i) {
-  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
-var iterableToArrayLimit = _iterableToArrayLimit;
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-var nonIterableRest = _nonIterableRest;
-
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
-}
-
-var slicedToArray = _slicedToArray;
-
-var usePackages = Object.freeze({
-  bodyParser: bodyParser.json(),
-  cookieParser: cookieParser(),
-  compression: compression()
-});
-
-var useRootpath = Object.freeze({
-  paths: {
-    api: "/api",
-    "static": "/static",
-    "public": "/public",
-    documents: "/documents",
-    builds: "/builds"
-  },
-  useApi: function useApi(expressAppModuleReference) {
-    var state = expressAppModuleReference.state;
-    state.app.use(this.paths.api, function (req, res, next) {
-      state.router(req, res, next);
-    });
-  },
-  useStatic: function useStatic(expressAppModuleReference) {
-    var _this = this;
-
-    var state = expressAppModuleReference.state;
-    return function (pathToStatic) {
-      return state.app.get(_this.paths["static"], express["static"](pathToStatic));
-    };
-  },
-  usePublic: function usePublic(expressAppModuleReference) {
-    var _this2 = this;
-
-    var state = expressAppModuleReference.state;
-    return function (pathToPublic) {
-      return state.app.get(_this2.paths["public"], express["static"](pathToPublic));
-    };
-  },
-  useDocuments: function useDocuments(expressAppModuleReference) {
-    var _this3 = this;
-
-    var state = expressAppModuleReference.state;
-    return function (pathToDocuments) {
-      return state.app.get(_this3.paths.documents, express["static"](pathToDocuments));
-    };
-  },
-  useBuilds: function useBuilds(expressAppModuleReference) {
-    var _this4 = this;
-
-    var state = expressAppModuleReference.state;
-    return function (pathToDocuments) {
-      return state.app.get(_this4.paths.builds, express["static"](pathToDocuments));
-    };
-  }
-});
-var rootPaths = useRootpath.paths;
-
-var middlewares = {
-  usePackages: usePackages,
-  useRootpath: useRootpath,
-  rootPaths: rootPaths
-};
-
-var usePackages$1 = middlewares.usePackages,
-    useRootpath$1 = middlewares.useRootpath,
-    rootPaths$1 = middlewares.rootPaths;
-
-var ExpressApp = function ExpressApp(name) {
-  this["super"](name);
-  this.state = {
-    attempts: 0
-  };
-
-  this.__setApp = function () {
-    this.setState({
-      app: express()
-    });
-    this.logger('App is set.');
-  };
-
-  this.__setRouter = function () {
-    this.setState({
-      router: express.Router(),
-      attempts: this.state.attempts + 1
-    });
-
-    this.__setExposedValues();
-
-    this.logger('Router is set.');
-  };
-
-  this.__useMiddlewares = function () {
-    var state = this.state;
-    var middlewareNames = [];
-    Object.entries(usePackages$1).forEach(function (_ref) {
-      var _ref2 = slicedToArray(_ref, 2),
-          name = _ref2[0],
-          pack = _ref2[1];
-
-      state.app.use(pack);
-      middlewareNames.push(name);
-    });
-    this.logger("Middlewares used: ".concat(middlewareNames.join(", ") || 'none', "."));
-  };
-
-  this.__useRouting = function () {
-    useRootpath$1.useApi(this);
-    var api = rootPaths$1.api;
-    this.logger("Routing is set for ".concat(api, " path."));
-  };
-
-  this.__setExternalMethods = function () {
-    this.setExpose({
-      setStaticContentPath: useRootpath$1.useStatic(this),
-      setPublicContentPath: useRootpath$1.usePublic(this),
-      setDocumentsContentPath: useRootpath$1.useDocuments(this),
-      setBuildsContentPath: useRootpath$1.useBuilds(this),
-      setRouterAgain: this.__setRouter.bind(this)
-    });
-  };
-
-  this.__setExposedValues = function () {
-    var setExpose = this.setExpose,
-        state = this.state;
-    setExpose({
-      app: state.app,
-      router: state.router,
-      attempts: state.attempts
-    });
-  };
-
-  this.__createModule = function () {
-    this.__setApp();
-
-    this.__setRouter();
-
-    this.__useMiddlewares();
-
-    this.__useRouting();
-
-    this.__setExternalMethods();
-
-    this.__setExposedValues();
-  };
-};
-
-ExpressApp.prototype = Object.create(Module.prototype);
-var expressApp = new ExpressApp('[express-app]');
-
-var NodeServer = function NodeServer(name) {
-  this["super"](name);
-  this.required = {
-    app: undefined,
-    port: undefined,
-    protocol: undefined,
-    key: undefined,
-    cert: undefined
-  };
-
-  this.__createServerParams = function () {
-    var required = this.required,
-        setState = this.setState;
-    var useCertification = required.cert() && required.key() ? {
-      cert: required.cert(),
-      key: required.key()
-    } : null;
-    var useParams = useCertification ? [useCertification, required.app()] : [required.app()];
-    setState({
-      useParams: useParams
-    });
-    this.logger("Server params created to use. Params length: ".concat(useParams.length, "."));
-  };
-
-  this.__createServer = function () {
-    var _serverPackages$usePa;
-
-    var required = this.required,
-        state = this.state,
-        setState = this.setState;
-    var usePackage = required.protocol() ? required.protocol() : null;
-    var serverPackages = {
-      http: http,
-      https: https
-    };
-    setState({
-      server: (_serverPackages$usePa = serverPackages[usePackage]).createServer.apply(_serverPackages$usePa, toConsumableArray(state.useParams)),
-      usePackage: usePackage
-    });
-    this.logger("Server created with \"".concat(usePackage, "\" package."));
-  };
-
-  this.__runServer = function () {
-    var _this = this;
-
-    var required = this.required,
-        state = this.state;
-    this.logger('Server run attempt.');
-    var portingTimeout = null;
-    return new Promise(function (res) {
-      portingTimeout = setTimeout(function () {
-        _this.logger('Failure: binding port timeout. This is unhandled scenario!', 'fail', 'info');
-
-        res(false);
-      }, 30000);
-      state.server.listen(required.port(), function () {
-        clearTimeout(portingTimeout);
-
-        _this.logger("Server is listening on port: ".concat(required.port(), "."), 'ok', 'info');
-
-        res(true);
-      });
-    });
-  };
-
-  this.__setExposedValues = function () {
-    var state = this.state,
-        setExpose = this.setExpose;
-    setExpose({
-      server: state.server,
-      usePackage: state.usePackage
-    });
-  };
-
-  this.__createModule = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-    return regenerator.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            this.__createServerParams();
-
-            this.__createServer();
-
-            _context.next = 4;
-            return this.__runServer();
-
-          case 4:
-            this.__setExposedValues();
-
-          case 5:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-};
-
-NodeServer.prototype = Object.create(Module.prototype);
-var nodeServer = new NodeServer('[node-server]');
-
-var TestServer = function TestServer(name) {
-  this["super"](name);
-
-  this.__sendTestRequest = function () {
-    var _this = this;
-
-    var state = this.state,
-        required = this.required;
-    var usePackage = required.usePackage;
-    var testAddress = required.webaddress() + "/api" + state.path;
-    this.logger("Server test attempt on \"".concat(testAddress, "\" path."));
-    var connectionTimeout = null;
-    return new Promise(function (res) {
-      connectionTimeout = setTimeout(function () {
-        _this.logger("Test at \"".concat(testAddress, "\" failed - connection timeout."), 'fail', 'info');
-
-        res(false);
-      }, 30000);
-
-      try {
-        var serverPackages = {
-          http: http,
-          https: https
-        };
-        var _testServer = serverPackages[usePackage()];
-
-        _testServer.get(testAddress, function (response) {
-          _this.logger("Incoming request (GET) to \"".concat(testAddress, "\"."));
-
-          var data = '';
-          response.on('data', function (chunk) {
-            data += chunk;
-          });
-          response.on('end', function () {
-            clearTimeout(connectionTimeout);
-
-            _this.logger("Response from \"".concat(testAddress, "\" received: ").concat(data), 'ok', 'info');
-
-            res(true);
-          });
-        }).on('error', function (e) {
-          clearTimeout(connectionTimeout);
-
-          _testServer.close();
-
-          _this.logger("Connection test failure. ".concat(e, "."), 'fail', 'info');
-
-          res(false);
-        });
-      } catch (e) {
-        clearTimeout(connectionTimeout);
-
-        _this.logger("Connection attemp failed: ".concat(e, "."), 'fail', 'info');
-
-        res(false);
-      }
-    });
-  };
-
-  this.__setTestRouting = function () {
-    var required = this.required,
-        setState = this.setState,
-        state = this.state;
-    var router = required.router;
-    setState({
-      path: '/test'
-    });
-    router().get(state.path, function (req, res) {
-      res.status(200).json({
-        Message: 'If you see this message, connection to server is good.',
-        Success: true
-      });
-    });
-    this.logger("Test router is set on path \"".concat(state.path, "\". Test msg will be served."));
-  };
-
-  this.__testServer = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-    var success, server;
-    return regenerator.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return this.__sendTestRequest();
-
-          case 2:
-            success = _context.sent;
-
-            if (!success) {
-              this.logger('Test failed. Server will be closed.', 'fail', 'info');
-              server = this.required.server;
-
-              try {
-                server().close();
-                this.logger('Server closed.');
-              } catch (e) {
-                this.logger("Server closing failure: ".concat(e, "."), 'fail', 'info');
-              }
-            }
-
-            this.setExpose({
-              serverTestSuccess: success
-            });
-            this.logger("Test success: ".concat(this.expose.serverTestSuccess, "."), 'ok', 'info');
-
-          case 6:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-  this.__createModule = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
-    return regenerator.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return this.__setTestRouting();
-
-          case 2:
-            _context2.next = 4;
-            return this.__testServer();
-
-          case 4:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2, this);
-  }));
-};
-
-TestServer.prototype = Object.create(Module.prototype);
-var testServer = new TestServer('[test-server]');
-testServer.setRequired({
-  server: undefined,
-  router: undefined,
-  webaddress: undefined,
-  usePackage: undefined
-});
-
-function createServerREST() {
-  return _createServerREST.apply(this, arguments);
-}
-
-function _createServerREST() {
-  _createServerREST = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
-    return regenerator.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            return _context2.abrupt("return", new Promise(function (resolveRouter) {
-              function recursivelyCreateAndTest() {
-                return _recursivelyCreateAndTest.apply(this, arguments);
-              }
-
-              function _recursivelyCreateAndTest() {
-                _recursivelyCreateAndTest = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-                  var attempts,
-                      _testServer$get,
-                      serverTestSuccess,
-                      _args = arguments;
-
-                  return regenerator.wrap(function _callee$(_context) {
-                    while (1) {
-                      switch (_context.prev = _context.next) {
-                        case 0:
-                          attempts = _args.length > 0 && _args[0] !== undefined ? _args[0] : 0;
-
-                          if (!(attempts >= 2)) {
-                            _context.next = 3;
-                            break;
-                          }
-
-                          return _context.abrupt("return", false);
-
-                        case 3:
-                          log.strong("[server-rest] Server creation attempt: ".concat(attempts + 1, "."));
-                          _context.prev = 4;
-                          _context.next = 7;
-                          return determineProtocol.create();
-
-                        case 7:
-                          _context.next = 9;
-                          return determinePort.create();
-
-                        case 9:
-                          _context.next = 11;
-                          return determineDomain.create(determinePort);
-
-                        case 11:
-                          _context.next = 13;
-                          return determineWebaddress.create(determineDomain, determineProtocol);
-
-                        case 13:
-                          _context.next = 15;
-                          return expressApp.create();
-
-                        case 15:
-                          _context.next = 17;
-                          return nodeServer.create(determineProtocol, determinePort, expressApp);
-
-                        case 17:
-                          _context.next = 19;
-                          return testServer.create(nodeServer, expressApp, determineProtocol, determineWebaddress);
-
-                        case 19:
-                          _context.next = 25;
-                          break;
-
-                        case 21:
-                          _context.prev = 21;
-                          _context.t0 = _context["catch"](4);
-                          log.fail("[server-rest] ".concat(_context.t0, "."));
-                          return _context.abrupt("return", recursivelyCreateAndTest(attempts + 1));
-
-                        case 25:
-                          _testServer$get = testServer.get(), serverTestSuccess = _testServer$get.serverTestSuccess;
-                          expressApp.expose.setRouterAgain();
-                          console.log('WHAT I HAGE, ', expressApp.get().router());
-                          return _context.abrupt("return", serverTestSuccess() ? expressApp.get() : recursivelyCreateAndTest(attempts + 1));
-
-                        case 29:
-                        case "end":
-                          return _context.stop();
-                      }
-                    }
-                  }, _callee, null, [[4, 21]]);
-                }));
-                return _recursivelyCreateAndTest.apply(this, arguments);
-              }
-
-              resolveRouter(recursivelyCreateAndTest());
-            }));
-
-          case 1:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2);
-  }));
-  return _createServerREST.apply(this, arguments);
-}
-
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -2496,7 +1643,9 @@ var ServerWs = /*#__PURE__*/function () {
 
   createClass(ServerWs, [{
     key: "__manageCounter",
-    value: function __manageCounter(counter) {// Test.findOne({ staticId: 'some-test-string' }, (err, test) => {
+    value: function __manageCounter()
+    /*counter*/
+    {// Test.findOne({ staticId: 'some-test-string' }, (err, test) => {
       //     if (err) {
       //         console.log('MONGODB. Test model searching error.');
       //         return;
@@ -2583,6 +1732,946 @@ var ServerWs = /*#__PURE__*/function () {
   return ServerWs;
 }();
 
+var _typeof_1 = createCommonjsModule(function (module) {
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    module.exports = _typeof = function _typeof(obj) {
+      return typeof obj;
+    };
+  } else {
+    module.exports = _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
+module.exports = _typeof;
+});
+
+var configTemplate = {
+  port: 5000,
+  domain: 'localhost:5000',
+  protocol: 'http',
+  certification: {
+    autogen: false,
+    key: null,
+    cert: null
+  },
+  serv: {
+    fallback: ['./build/index.html', '*'],
+    staticFiles: [['./build/stylesheet.css', '/stylesheet.css'], ['./build/script.js', '/script.js']],
+    staticFolders: [['./pub/public', '/public'], ['./pub/static', '/static'], ['./pub/documents', '/doc']],
+    router: '/api'
+  },
+  middlewares: []
+};
+
+function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+var mapCustomerValues = function mapCustomerValues(config) {
+  var resolveValue = function resolveValue() {
+    try {
+      var givenConfig = _objectSpread$2({}, config);
+
+      this.path.forEach(function (key) {
+        givenConfig = givenConfig[key];
+      });
+      var treatAsUndefined = [undefined, '', null];
+      var givenIsUndefined = treatAsUndefined.includes(givenConfig);
+      if (givenIsUndefined) log.warn("[servpack.mapping] Given value \"".concat(givenConfig, "\" for config field \"").concat(this.path[this.path.length - 1], "\" falls to default: \"").concat(this["default"], "\"."));
+      this.customer = givenIsUndefined ? this["default"] : givenConfig;
+    } catch (e) {
+      log.warn("[servpack.mapping] Given value for \"".concat(this.path[this.path.length - 1], "\" is set to default: \"").concat(this["default"], "\"."));
+      log.warn("[servpack.mapping] ".concat(e, "."));
+      this.customer = this.customer === 'disabled' ? undefined : this["default"];
+    }
+  };
+
+  return {
+    port: {
+      "default": configTemplate.port,
+      path: ['port'],
+      type: 'number',
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = _typeof_1(this.customer) === this.type || _typeof_1(+this.customer) === this.type;
+        var fail = 'Port must be a number.';
+        return valid ? null : fail;
+      }
+    },
+    domain: {
+      "default": configTemplate.domain,
+      path: ['domain'],
+      type: 'string',
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = _typeof_1(this.customer) === this.type;
+        var fail = 'Domain must be a string.';
+        return valid ? null : fail;
+      }
+    },
+    protocol: {
+      "default": configTemplate.protocol,
+      path: ['protocol'],
+      allowed: ['http', 'https'],
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = this.allowed.includes(this.customer);
+        var fail = 'Protocol must be exactely one of strings: http, https.';
+        return valid ? null : fail;
+      }
+    },
+    certification_autogen: {
+      "default": configTemplate.certification.autogen,
+      path: ['certification', 'autogen'],
+      type: 'boolean',
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = _typeof_1(this.customer) === this.type;
+        var fail = 'Field "auto" of "certification" must be of boolean type.';
+        return valid ? null : fail;
+      }
+    },
+    certification_key: {
+      "default": configTemplate.certification.key,
+      path: ['certification', 'key'],
+      type: Buffer,
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = this.customer instanceof this.type || this.customer === this["default"];
+        var fail = 'Certification key must be a buffer.';
+        return valid ? null : fail;
+      }
+    },
+    certification_cert: {
+      "default": configTemplate.certification.cert,
+      path: ['certification', 'cert'],
+      type: Buffer,
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = this.customer instanceof this.type || this.customer === this["default"];
+        var fail = "Certification cert must be a buffer, string 'disabled', or undefined (this falls back to default).";
+        return valid ? null : fail;
+      }
+    },
+    serv_staticFolders: {
+      "default": configTemplate.serv.staticFolders,
+      path: ['serv', 'staticFolders'],
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = this.customer && this.customer.map;
+        var childrenValid = true;
+
+        if (valid) {
+          this.customer.forEach(function (element) {
+            if (!element.map) {
+              childrenValid = false;
+            } else {
+              if (element.length !== 2) {
+                childrenValid = false;
+              }
+
+              element.forEach(function (item) {
+                if (typeof item !== 'string') {
+                  childrenValid = false;
+                }
+              });
+            }
+          });
+        }
+
+        var fail = 'Serv.staticFolders field must be an array of arrays of strings.';
+        return valid && childrenValid ? null : fail;
+      }
+    },
+    serv_staticFiles: {
+      "default": configTemplate.serv.staticFiles,
+      path: ['serv', 'staticFiles'],
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = this.customer && this.customer.map;
+        var childrenValid = true;
+
+        if (valid) {
+          this.customer.forEach(function (element) {
+            if (!element.map) {
+              childrenValid = false;
+            } else {
+              if (element.length !== 2) {
+                childrenValid = false;
+              }
+
+              element.forEach(function (item) {
+                if (typeof item !== 'string') {
+                  childrenValid = false;
+                }
+              });
+            }
+          });
+        }
+
+        var fail = 'Serv.staticFiles field must be an array of arrays of strings.';
+        return valid && childrenValid ? null : fail;
+      }
+    },
+    serv_fallback: {
+      "default": configTemplate.serv.fallback,
+      path: ['serv', 'fallback'],
+      type: 'object',
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = this.customer && this.customer.map && this.customer.length === 2;
+        var childrenValid = true;
+
+        if (valid) {
+          this.customer.forEach(function (element) {
+            if (typeof element !== 'string') {
+              childrenValid = false;
+            }
+          });
+        }
+
+        var fail = 'Serv.fallback field must be an array of two strings.';
+        return valid && childrenValid ? null : fail;
+      }
+    },
+    serv_router: {
+      "default": configTemplate.serv.router,
+      type: 'string',
+      path: ['serv', 'router'],
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = _typeof_1(this.customer) === this.type;
+        var fail = 'Serv.router field must be of string type.';
+        return valid ? null : fail;
+      }
+    },
+    middlewares: {
+      "default": configTemplate.middlewares,
+      type: 'object',
+      path: ['middlewares'],
+      resolveValue: resolveValue,
+      validate: function validate() {
+        var valid = _typeof_1(this.customer) === this.type && this.customer.map;
+        var fail = 'Middlewares field must be an array.';
+        return valid ? null : fail;
+      }
+    }
+  };
+};
+
+function useValidation(customerConfig) {
+  var values = mapCustomerValues(customerConfig);
+  Object.keys(values).forEach(function (key) {
+    var data = values[key];
+    data.resolveValue.bind(data)();
+    var errorMessage = data.validate.bind(data)();
+
+    if (errorMessage) {
+      throw new Error(errorMessage);
+    }
+  });
+  return values;
+}
+
+function ServerPackModule() {}
+
+ServerPackModule.prototype["super"] = function (name) {
+  this.__name__ = name;
+};
+
+ServerPackModule.prototype.binder = function (self) {
+  for (var key in self) {
+    if (typeof self[key] === 'function') {
+      self[key] = self[key].bind(self);
+    }
+  }
+};
+
+ServerPackModule.prototype.logger = function (info) {
+  var stat = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'msg';
+  var message = "".concat(this.__name__ || '(ANONYMOUS)', ". ").concat(info);
+  if (stat === 'warn') log.warn(message);
+  if (stat === 'fail') log.fail(message);
+  if (stat === 'ok') log.ok(message);
+  if (stat === 'info') log.info(message);
+  if (stat === 'strong') log.strong(message);
+};
+
+ServerPackModule.prototype.__logSection = function () {
+  var end = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var sectionMessage = [this.__name__, 'start'];
+  if (!end) log.section.apply(log, sectionMessage);
+  if (end) log.endsec.apply(log, sectionMessage);
+};
+
+ServerPackModule.prototype.__logEnd = function () {
+  var sectionMessage = [this.__name__, 'start'];
+  log.endsec.apply(log, sectionMessage);
+};
+
+ServerPackModule.prototype.create = /*#__PURE__*/function () {
+  var _ref = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(context) {
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            this.__logSection();
+
+            this.context = context;
+            _context.next = 4;
+            return this.__createModule();
+
+          case 4:
+            _context.next = 6;
+            return this.__logSection(true);
+
+          case 6:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function (_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var DetermineProtocol = function DetermineProtocol() {
+  this["super"]('[SERVPACK-PROTOCOL]');
+
+  this.__handleCertFiles = function () {
+    var config = this.context.config;
+    var key = config.certification_key.customer;
+    var cer = config.certification_cert.customer;
+    var isDisabled = key === 'disabled' || cer === 'disabled';
+
+    if (isDisabled) {
+      this.logger('Certification is disabled.', 'info');
+      return false;
+    } else {
+      return [cer, key];
+    }
+  };
+
+  this.__setHttps = function (certs) {
+    var setState = this.context.setState;
+    setState({
+      protocol: 'https',
+      cert: certs[0],
+      key: certs[1],
+      flagged: '1'
+    });
+    this.logger('Protocol is set to https.', 'ok');
+  };
+
+  this.__setHttp = function () {
+    var setState = this.context.setState;
+    setState({
+      protocol: 'http',
+      key: undefined,
+      cert: undefined,
+      flagged: '12'
+    });
+    this.logger('Protocol is set to http', 'warn');
+  };
+
+  this.__createModule = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+    var certFound;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            certFound = this.__handleCertFiles();
+            if (certFound) this.__setHttps(certFound);else this.__setHttp(certFound);
+
+          case 2:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+};
+
+DetermineProtocol.prototype = Object.create(ServerPackModule.prototype);
+var determineProtocol = new DetermineProtocol();
+
+var DeterminePort = function DeterminePort() {
+  this["super"]('[SERVERPACK-PORT]');
+
+  this.__setPort = function () {
+    var _this$context = this.context,
+        config = _this$context.config,
+        setState = _this$context.setState;
+    var port = config.port;
+    setState({
+      port: port.customer
+    });
+    this.logger("Port determined: ".concat(port.customer), 'ok');
+  };
+
+  this.__createModule = function () {
+    this.__setPort();
+  };
+};
+
+DeterminePort.prototype = Object.create(ServerPackModule.prototype);
+var determinePort = new DeterminePort();
+
+var DetermineDomain = function DetermineDomain() {
+  this["super"]('[SERVPACK-DOMAIN]');
+
+  this.__setDomain = function () {
+    var _this$context = this.context,
+        config = _this$context.config,
+        setState = _this$context.setState;
+    setState({
+      domain: config.domain.customer
+    });
+    this.logger("Domain is set: ".concat(config.domain.customer, "."), 'ok');
+  };
+
+  this.__createModule = function () {
+    this.__setDomain();
+  };
+};
+
+DetermineDomain.prototype = Object.create(ServerPackModule.prototype);
+var determineDomain = new DetermineDomain();
+
+var DetermineWebaddress = function DetermineWebaddress() {
+  this["super"]('[SERVERPACK-WEBADDRESS]');
+
+  this.__createModule = function () {
+    var _this$context = this.context,
+        setState = _this$context.setState,
+        state = _this$context.state;
+    var webaddress = "".concat(state.protocol, "://").concat(state.domain);
+    setState({
+      webaddress: webaddress
+    });
+    this.logger("Web address set to ".concat(webaddress), 'ok');
+  };
+};
+
+DetermineWebaddress.prototype = Object.create(ServerPackModule.prototype);
+var determineWebaddress = new DetermineWebaddress();
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+var arrayWithHoles = _arrayWithHoles;
+
+function _iterableToArrayLimit(arr, i) {
+  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+var iterableToArrayLimit = _iterableToArrayLimit;
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+var nonIterableRest = _nonIterableRest;
+
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+
+var slicedToArray = _slicedToArray;
+
+var ExpressApp = function ExpressApp() {
+  this["super"]('[SERVPACK-EXPRESS]');
+
+  this.__setAppAndRouter = function () {
+    var setState = this.context.setState;
+    setState({
+      app: express(),
+      router: express.Router()
+    });
+    this.logger('App is created. Router is created', 'info');
+  };
+
+  this.__useMiddlewares = function () {
+    var _this$context = this.context,
+        state = _this$context.state,
+        config = _this$context.config;
+    var customer = config.middlewares.customer;
+    customer.forEach(function (middleware) {
+      state.app.use(middleware);
+    });
+    this.logger("Middlewares applied to app.", 'ok');
+  };
+
+  this.__useRouting = function () {
+    var _this = this;
+
+    var _this$context2 = this.context,
+        state = _this$context2.state,
+        setState = _this$context2.setState,
+        config = _this$context2.config;
+    var customer = config.serv_router.customer;
+    setState({
+      routerPath: customer
+    });
+    state.app.use(customer, function (req, res, next) {
+      _this.context.state.router(req, res, next);
+    });
+    this.logger("Routing is set for ".concat(customer, " path."), 'info');
+  };
+
+  this.__useStaticFiles = function () {
+    var _this2 = this;
+
+    var _this$context3 = this.context,
+        state = _this$context3.state,
+        config = _this$context3.config;
+    var customer = config.serv_staticFiles.customer;
+    customer.forEach(function (pair) {
+      var _pair = slicedToArray(pair, 2),
+          pathToFile = _pair[0],
+          routeToFile = _pair[1];
+
+      try {
+        fs.readFileSync(pathToFile);
+        state.app.get(routeToFile, function (_, res) {
+          return res.sendFile(pathToFile);
+        });
+
+        _this2.logger("Static file is served on \"".concat(routeToFile, "\" path."), 'ok');
+      } catch (e) {
+        _this2.logger("Something wrong static file declared to be: \"".concat(pathToFile, "\"."), 'fail');
+
+        _this2.logger("".concat(e), 'fail');
+      }
+    });
+  };
+
+  this.__useStaticFolders = function () {
+    var _this3 = this;
+
+    var _this$context4 = this.context,
+        config = _this$context4.config,
+        state = _this$context4.state;
+    var customer = config.serv_staticFolders.customer;
+    customer.forEach(function (pair) {
+      var _pair2 = slicedToArray(pair, 2),
+          pathToFolder = _pair2[0],
+          routeToFolder = _pair2[1];
+
+      state.app.use(routeToFolder, express["static"](pathToFolder));
+
+      _this3.logger("Public folder \"".concat(pathToFolder, "\" is served on \"").concat(routeToFolder, "\"."), 'ok');
+    });
+  };
+
+  this.__useFallback = function () {
+    var _this$context5 = this.context,
+        config = _this$context5.config,
+        state = _this$context5.state;
+    var customer = config.serv_fallback.customer;
+
+    var _customer = slicedToArray(customer, 2),
+        pathToFile = _customer[0],
+        fallbackRoute = _customer[1];
+
+    try {
+      fs.readFileSync(pathToFile);
+      state.app.get(fallbackRoute, function (_, res) {
+        return res.sendFile(pathToFile);
+      });
+      this.logger("Fallback file is served on \"".concat(fallbackRoute, "\" path."), 'ok');
+    } catch (e) {
+      this.logger("Something wrong with fallback file: \"".concat(pathToFile, "\"."), 'fail');
+      this.logger("".concat(e), 'fail');
+    }
+  };
+
+  this.__createModule = function () {
+    this.__setAppAndRouter();
+
+    this.__useMiddlewares();
+
+    this.__useRouting();
+
+    this.__useStaticFiles();
+
+    this.__useStaticFolders();
+
+    this.__useFallback();
+  };
+};
+
+ExpressApp.prototype = Object.create(ServerPackModule.prototype);
+var expressApp = new ExpressApp();
+
+var NodeServer = function NodeServer(name) {
+  this["super"](name);
+
+  this.__createServerParams = function () {
+    var _this$context = this.context,
+        config = _this$context.config,
+        state = _this$context.state,
+        setState = _this$context.setState;
+    var k = config.certification_key.customer,
+        c = config.certification_cert.customer;
+    var useCertification = c && k ? {
+      cert: c,
+      key: k
+    } : null;
+    var useParams = useCertification ? [useCertification, state.app] : [state.app];
+    setState({
+      serverParams: useParams
+    });
+    this.logger("Server params created. Params length: ".concat(useParams.length, "."), 'info');
+  };
+
+  this.__createServerPackage = function () {
+    var _this$context2 = this.context,
+        config = _this$context2.config,
+        setState = _this$context2.setState;
+    var customer = config.protocol.customer;
+    var allowedServerPackages = {
+      http: http,
+      https: https
+    };
+    var usePackage = allowedServerPackages[customer];
+    setState({
+      serverPackage: usePackage
+    });
+    this.logger("Server package determined: \"".concat(customer, "\" package."), 'info');
+  };
+
+  this.__createServer = function () {
+    var _this$context3 = this.context,
+        state = _this$context3.state,
+        setState = _this$context3.setState;
+
+    try {
+      var _state$serverPackage;
+
+      var server = (_state$serverPackage = state.serverPackage).createServer.apply(_state$serverPackage, toConsumableArray(state.serverParams));
+
+      setState({
+        server: server
+      });
+    } catch (E) {
+      this.logger("\"".concat(E, "\""), 'fail');
+    }
+
+    this.logger("Server created.", 'info');
+  };
+
+  this.__runServer = function () {
+    var _this = this;
+
+    var state = this.context.state;
+    this.logger('Server run attempt. 30sec for trying is given.', 'info');
+    var portingTimeout = null;
+    return new Promise(function (res) {
+      portingTimeout = setTimeout(function () {
+        _this.logger('Binding port timeout. Unhandled scenario!', 'fail');
+
+        res(false);
+      }, 30000);
+      state.server.listen(state.port, function () {
+        clearTimeout(portingTimeout);
+
+        _this.logger("Server is listening on port: ".concat(state.port, "."), 'ok');
+
+        res(true);
+      });
+    });
+  };
+
+  this.__createModule = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            this.__createServerParams();
+
+            this.__createServerPackage();
+
+            this.__createServer();
+
+            _context.next = 5;
+            return this.__runServer();
+
+          case 5:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+};
+
+NodeServer.prototype = Object.create(ServerPackModule.prototype);
+var nodeServer = new NodeServer('[node-server]');
+
+var TestServer = function TestServer(name) {
+  this["super"](name);
+
+  this.__setTestRouting = function () {
+    var state = this.context.state;
+    var webaddress = state.webaddress,
+        router = state.router,
+        routerPath = state.routerPath;
+    var testRoute = '/test';
+    this.testAddress = webaddress + routerPath + testRoute;
+    router.get(testRoute, function (_, res) {
+      res.status(200).json({
+        Message: 'If you see this message, connection to server is good.',
+        Success: true
+      });
+    });
+    this.logger("Test router listens on \"".concat(this.testAddress, "\". Test msg will be served."), 'info');
+  };
+
+  this.__sendTestGetReq = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+    var _this = this;
+
+    var state;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            state = this.context.state;
+            _context.next = 3;
+            return new Promise(function (resolve, reject) {
+              _this.logger("Test start: GET ".concat(_this.testAddress, ", 30sec timeout."), 'info');
+
+              var timeout = setTimeout(function () {
+                return reject('Connection timeout.');
+              }, 30000);
+              var request = state.serverPackage;
+              var received = '';
+              request.get(_this.testAddress, function (response) {
+                response.on('data', function (chunk) {
+                  return received += chunk;
+                });
+                response.on('end', function () {
+                  clearTimeout(timeout);
+
+                  _this.logger("GET ".concat(_this.testAddress, ", response: ").concat(received), 'ok');
+
+                  resolve(true);
+                });
+              }).on('error', function (e) {
+                _this.logger("GET ".concat(_this.testAddress, ", error: ").concat(e), 'fail');
+
+                clearTimeout(timeout);
+                reject(e);
+              });
+            });
+
+          case 3:
+            return _context.abrupt("return", _context.sent);
+
+          case 4:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  this.__deleteTestRouter = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
+    var setState;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            setState = this.context.setState;
+            setState({
+              router: express.Router(),
+              flagged: '31'
+            });
+
+          case 2:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+  this.__createModule = /*#__PURE__*/asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3() {
+    return regenerator.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return this.__setTestRouting();
+
+          case 2:
+            _context3.next = 4;
+            return this.__sendTestGetReq();
+
+          case 4:
+            this.__deleteTestRouter();
+
+          case 5:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+};
+
+TestServer.prototype = Object.create(ServerPackModule.prototype);
+var testServer = new TestServer('[test-server]');
+
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function createServerREST(_x) {
+  return _createServerREST.apply(this, arguments);
+}
+
+function _createServerREST() {
+  _createServerREST = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(config) {
+    var mappedConfig, servpack;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            mappedConfig = null;
+
+            try {
+              mappedConfig = useValidation(config);
+            } catch (e) {
+              log.fail(e);
+              process.exit(1);
+            }
+
+            _context.t0 = Object.freeze({});
+            _context.t1 = Object.freeze(_objectSpread$3({}, mappedConfig));
+
+            _context.t2 = function _setState(payload) {
+              this._state = Object.freeze(_objectSpread$3({}, this._state, {}, payload));
+            };
+
+            servpack = {
+              _state: _context.t0,
+              _config: _context.t1,
+              _setState: _context.t2,
+
+              get state() {
+                return this._state;
+              },
+
+              get config() {
+                return this._config;
+              }
+
+            };
+            servpack.setState = servpack._setState.bind(servpack);
+            _context.prev = 7;
+            _context.next = 10;
+            return determineProtocol.create(servpack);
+
+          case 10:
+            _context.next = 12;
+            return determinePort.create(servpack);
+
+          case 12:
+            _context.next = 14;
+            return determineDomain.create(servpack);
+
+          case 14:
+            _context.next = 16;
+            return determineWebaddress.create(servpack);
+
+          case 16:
+            _context.next = 18;
+            return expressApp.create(servpack);
+
+          case 18:
+            _context.next = 20;
+            return nodeServer.create(servpack);
+
+          case 20:
+            _context.next = 22;
+            return testServer.create(servpack);
+
+          case 22:
+            log.ok("[servpack] All modules build.");
+            return _context.abrupt("return", servpack.state);
+
+          case 26:
+            _context.prev = 26;
+            _context.t3 = _context["catch"](7);
+            log.fail("[servpack] ".concat(_context.t3, "."));
+            throw new Error(_context.t3);
+
+          case 30:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[7, 26]]);
+  }));
+  return _createServerREST.apply(this, arguments);
+}
+
+var usePackages = Object.freeze({
+  bodyParser: bodyParser.json(),
+  cookieParser: cookieParser(),
+  compression: compression()
+});
+var config = {
+  port: 5000,
+  domain: "localhost:5000",
+  protocol: 'https',
+  certification: {
+    autogen: false,
+    key: fs.readFileSync(path$1.join(__dirname, '../cert/key.pem')),
+    cert: fs.readFileSync(path$1.join(__dirname, '../cert/cert.pem'))
+  },
+  serv: {
+    fallback: ["path-to-build-html", "*"],
+    staticFiles: [["path-to-build-css", "/stylesheet.css"], ["path-to-build-js", "/script.js"]],
+    staticFolders: [["path-to-folder", "/folder/adress"], ["path-to-folder", "/folder/adress"], ["path-to-folder", "/folder/adress"]],
+    router: ""
+  },
+  middlewares: [usePackages.bodyParser, usePackages.cookieParser, usePackages.compression]
+};
+
 dotenv.config();
 
 var fail$1 = function fail(componentName) {
@@ -2590,8 +2679,8 @@ var fail$1 = function fail(componentName) {
   throw new Error("Application failure: there is no ".concat(componentName, "."));
 };
 
-var success = function success() {
-  log.frame("Server REST available at: ".concat(determineWebaddress.get().webaddress()), 'blue');
+var success = function success(webaddress) {
+  log.frame("Server REST available at: ".concat(webaddress), 'blue');
 };
 
 function Application() {
@@ -2600,33 +2689,25 @@ function Application() {
 
 function _Application() {
   _Application = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-    var serverRestModuleAPI, components;
+    var serverRestModuleAPI;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return createServerREST();
+            return createServerREST(config);
 
           case 2:
             serverRestModuleAPI = _context.sent;
-            components = Object.freeze({
-              router: serverRestModuleAPI.router(),
-              app: serverRestModuleAPI.app(),
-              setStaticContentPath: serverRestModuleAPI.setStaticContentPath,
-              setPublicContentPath: serverRestModuleAPI.setPublicContentPath,
-              setDocumentsContentPath: serverRestModuleAPI.setDocumentsContentPath,
-              setBuildsContentPath: serverRestModuleAPI.setBuildsContentPath
-            });
-            if (!components.router) fail$1('router');
-            if (!components.app) fail$1('app');
-            success();
-            routes(components.router);
+            if (!serverRestModuleAPI.router) fail$1('router');
+            if (!serverRestModuleAPI.app) fail$1('app');
+            success(serverRestModuleAPI.webaddress);
+            routes(serverRestModuleAPI.router);
             database();
             new ServerWs();
-            return _context.abrupt("return", components);
+            return _context.abrupt("return", serverRestModuleAPI);
 
-          case 11:
+          case 10:
           case "end":
             return _context.stop();
         }

@@ -4,10 +4,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import includePaths from 'rollup-plugin-includepaths';
 import babel from 'rollup-plugin-babel';
 import watch from '@rollup/plugin-run';
-import babelrc from './../babel.config';
+import babelConfig from '../babel.config';
 
 const plugins = [
-    babel(babelrc),
+    babel(babelConfig),
     resolve(),
     commonjs(),
     // uglify(),

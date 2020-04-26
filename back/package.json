@@ -4,10 +4,17 @@
   "description": "backend",
   "main": "index.js",
   "scripts": {
+    "build:prod": "env IS_PRODUCTION='true' ROLLUP_OPTIONS='prod' rollup --config configs/rollup.config.js",
+    "start:prod": "env IS_PRODUCTION='true' node build/build.js",
+    "start:dev": "env IS_PRODUCTION='false' ROLLUP_OPTIONS='dev' rollup --config configs/rollup.config.js --watch",
+    "build:seed": "env IS_PRODUCTION='false' ROLLUP_OPTIONS='seed' rollup --config configs/rollup.config.js",
+    "start:seed": "env IS_PRODUCTION='false' node src/database/seed/runme.js",
+    "lint": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src priv_modules",
+    "pret": "prettier --config configs/prettier.config.js --write src/**/*.js priv_modules/**/*.js",
+    
     "watch:server": "env IS_PRODUCTION='false' rollup --config configs/rollup.config.dev.js --watch",
     "build:server": "rollup --config configs/rollup.config.prod.js",
-    "build:seed": "rollup --config configs/rollup.config.seed.js",
-    "start:seed": "env IS_PRODUCTION='false' node src/database/seed/runme.js",
+    
     "start:node": "env IS_PRODUCTION='false' node build/build.js",
     "lintr:src": "eslint --config configs/eslint.config.js --ignore-path configs/.eslintignore src priv_modules",
     "prttr:src": "prettier --config configs/prettier.config.js --write src/**/*.js priv_modules/**/*.js"
