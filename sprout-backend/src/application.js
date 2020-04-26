@@ -4,8 +4,6 @@ import log from 'priv_modules/logger';
 import { config } from 'dotenv';
 import servpack from 'priv_modules/servpack';
 import sockpack from 'priv_modules/sockpack';
-import servpackConfig from 'configs/servpack.config';
-import sockpackConfig from 'configs/sockpack.config';
 import 'colors';
 config();
 
@@ -18,7 +16,7 @@ const success = (webaddress) => {
     log.frame(`Server REST available at: ${webaddress}`, 'blue');
 };
 
-async function Application() {
+async function Application(servpackConfig, sockpackConfig) {
     try {
         const serverRestModuleAPI = await servpack(servpackConfig);
         if (!serverRestModuleAPI.router) fail('router');
