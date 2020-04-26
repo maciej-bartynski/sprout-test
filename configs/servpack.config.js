@@ -6,8 +6,8 @@ const { static, public, documents } = usePublicpath;
 const { api } = useBackendapi;
 
 const config = {
-    port: 5000,
-    domain: "localhost:5000",
+    port: 5060,
+    domain: "localhost:5060",
     protocol: 'https',
     certification: {
         autogen: false,

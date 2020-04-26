@@ -22,7 +22,7 @@ const Signin = props => {
                 If everything went good, there is static image below:<br />
                 <img
                     alt="Something wrong with static assets"
-                    src='/signin.jpg'
+                    src='/static/signin.jpg'
                 />
             </p>
             <p className={scss.parag}>This is fetched content below:</p>
