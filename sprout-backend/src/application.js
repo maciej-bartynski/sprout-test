@@ -4,43 +4,45 @@ import log from 'priv_modules/logger';
 import { config } from 'dotenv';
 import servpack from 'priv_modules/servpack';
 import sockpack from 'priv_modules/sockpack';
-import defServpackConfig from 'configs/servpack.config';
-import defSockpackConfig from 'configs/sockpack.config';
+import useParameters from './applicationParameters';
 import 'colors';
 config();
 
-const fail = (componentName) => {
-    log.fail(`[src/application]. Failure: there is no ${componentName}.`);
-    throw new Error(`Application failure: there is no ${componentName}.`);
-};
+const servpackValidate = serverRestModuleAPI => {
+    const invalidRouter = !serverRestModuleAPI.router ? 'router' : "";
+    const invalidExpApp = !serverRestModuleAPI.app ? 'app' : "";
+    const invalidServer = !serverRestModuleAPI.server ? 'server' : "";
+    if (invalidExpApp || invalidRouter || invalidServer) {
+        const msgErr = [invalidExpApp, invalidRouter, invalidServer].filter(item => !!item).join(", ");
+        log.fail(`[src/application]. Failure: there is no: ${msgErr}.`);
+        throw new Error(`Application failure: there is no ${msgErr}.`);
+    } else {
+        log.frame(`Server REST available at: ${serverRestModuleAPI.webaddress}`, 'blue');
+        return serverRestModuleAPI;
+    };
+}
 
-const success = (webaddress) => {
-    log.frame(`Server REST available at: ${webaddress}`, 'blue');
-};
+const sockpackValidate = async (sockpackConfig, serverRestModuleAPI) => {
+    const serverWSocModuleAPI = await sockpack({
+        ...sockpackConfig,
+        httpServer: serverRestModuleAPI.server
+    });
+    if (!serverWSocModuleAPI.server) {
+        log.fail(`[src/application]. Failure: there is no ws-server.`);
+        throw new Error(`Application failure: there is no ws-server.`);
+    } else {
+        log.ok(`[src/application]. Server WS protocol compatibile with: ${serverRestModuleAPI.protocol}`);
+        log.frame(`Server WS available at: ${serverRestModuleAPI.domain}`, 'blue');
+        return serverWSocModuleAPI;
+    };
+}
 
-async function Application(servpackConfig, sockpackConfig, useMerge = false) {
-    if (useMerge) {
-        servpackConfig = {
-            ...defServpackConfig,
-            ...servpackConfig
-        };
-        sockpackConfig = {
-            ...defSockpackConfig,
-            ...sockpackConfig
-        };
-    }
-
+async function Application(applicationParams) {
+    const [servpackConfig, sockpackConfig] = useParameters(applicationParams);
     try {
-        const serverRestModuleAPI = await servpack(servpackConfig);
-        if (!serverRestModuleAPI.router) fail('router');
-        if (!serverRestModuleAPI.app) fail('app');
-        success(serverRestModuleAPI.webaddress);
+        const serverRestModuleAPI = servpackValidate(await servpack(servpackConfig));
         setRoutes(serverRestModuleAPI.router);
-        const serverWSocModuleAPI = await sockpack({
-            ...sockpackConfig,
-            httpServer: serverRestModuleAPI.server
-        });
-        if (!serverWSocModuleAPI.server) fail('websocket');
+        await sockpackValidate(sockpackConfig, serverRestModuleAPI)
         database();
         return serverRestModuleAPI;
     } catch (e) {

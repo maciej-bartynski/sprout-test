@@ -1,7 +1,8 @@
 export const optionsDev = {
     input: 'configs/rollup.options/runwatch.js',
     output: {
-        file: 'build/watch.js',
+        //file: 'build/watch.js',
+        dir: 'build',
         format: 'cjs',
     },
 }

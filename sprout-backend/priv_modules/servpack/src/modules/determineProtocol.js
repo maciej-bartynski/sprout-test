@@ -30,7 +30,6 @@ const DetermineProtocol = function () {
             protocol: 'https',
             cert: certs[0],
             key: certs[1],
-            flagged: '1'
         });
         this.logger('Protocol is set to https.', 'ok');
     };
@@ -41,7 +40,6 @@ const DetermineProtocol = function () {
             protocol: 'http',
             key: undefined,
             cert: undefined,
-            flagged: '12'
         });
         this.logger('Protocol is set to http', 'warn');
     };

@@ -61,8 +61,7 @@ const TestServer = function (name) {
     this.__deleteTestRouter = async function () {
         const { setState } = this.context;
         setState({
-            router: express.Router(),
-            flagged: '31'
+            router: express.Router()
         });
     };
 
