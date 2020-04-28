@@ -8,7 +8,9 @@ module.exports = [
         template: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates/index.html'),
         inject: false,
     }),
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+        cleanStaleWebpackAssets: false
+    }),
     new CSSWebpackPlugin({
         template: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates/index.css'),
         filename: 'index.css',

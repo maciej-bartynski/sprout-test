@@ -7,7 +7,7 @@ const npmWatch = {
     output: {
         filename: 'index.js',
         publicPath: undefined,
-        path: '/watch',
+        path: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, '/watch'),
     },
     mode: 'development',
     devtool: 'inline-source-map',

@@ -7,7 +7,7 @@ const npmStart = {
     output: {
         filename: 'index.js',
         publicPath: "/",
-        path: '/start',
+        path: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK,'start'),
     },
     mode: 'development',
     devtool: 'inline-source-map',
