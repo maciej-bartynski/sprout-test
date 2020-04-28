@@ -9,6 +9,8 @@ const { build } = useBuildspath;
 const { static, public, documents } = usePublicpath;
 const { api } = useBackendapi;
 
+console.log('STATIC', static)
+
 const usePackages = Object.freeze({
     bodyParser: bodyParser.json(),
     cookieParser: cookieParser(),
