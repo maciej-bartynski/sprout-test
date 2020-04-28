@@ -1,0 +1,1 @@
+const webSocket = process.env.NODE_ENV = new WebSocket(`ws://localhost:8080`);

@@ -5,12 +5,12 @@ const CSSWebpackPlugin = require('mini-css-extract-plugin');
 
 module.exports = [
     new HtmlWebpackPlugin({
-        template: path.join(__dirname, '../../src/templates/index.html'),
+        template: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates/index.html'),
         inject: false,
     }),
     new CleanWebpackPlugin(),
     new CSSWebpackPlugin({
-        template: path.join(__dirname, '../../src/templates/index.css'),
+        template: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates/index.css'),
         filename: 'index.css',
     })
 ]

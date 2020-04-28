@@ -1,11 +1,11 @@
-const ruleJs = require('./moduleRules/ruleJs');
-const ruleCss = require('./moduleRules/ruleCss');
-const ruleCssExcluded = require('./moduleRules/ruleCssExcluded');
+const javascript = require('./javascript');
+const scssModular = require('./scssModular');
+const scssNoModular = require('./scssNoModular');
 
 module.exports = [
-    ruleJs,
-    ruleCss,
-    ruleCssExcluded,
+    javascript,
+    scssModular,
+    scssNoModular,
     {
         test: /\.(png|svg|jpg|gif)$/,
         use: [
