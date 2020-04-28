@@ -40,8 +40,10 @@ const { userUpdate, userRead, userReadAll, getUser } = user;
 const { test: test_controller, path: test_path } = test;
 
 const routes = (router) => {
-    if (process.env.IS_PRODUCTION === 'false')
-        router.get(test_path, test_controller);
+    /** 
+     * Test puroposes path */
+    router.get(test_path, test_controller);
+    /** */
 
     router.post('/signup', signup);
     router.post('/signin', signin);

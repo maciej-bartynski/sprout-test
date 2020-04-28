@@ -1,0 +1,2 @@
+import applicationValidator from 'applicationValidators/applicationValidator';
+export default applicationValidator

@@ -25,7 +25,7 @@ const sockpack = async (customConfig) => {
         });
         log.strong('SOCKPACK end', 'blue');
         return await {
-            server: wSocketState.server
+            socketServer: wSocketState.server
         };
     } catch (e) {
         log.fail(`[sockpack/root] ${e}`);
