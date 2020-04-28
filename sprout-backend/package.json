@@ -54,7 +54,8 @@
   "lint-staged": {
     "*.js": [
       "npm run pret",
-      "npm run lint"
+      "npm run lint",
+      "git add"
     ]
   },
   "husky": {
