@@ -1,11 +1,13 @@
+const { config } = require('dotenv');
+config();
+const contract = require('../../contract');
+
 const {
-    useBackendAddress: {
-        backendHttp,
-        backendHttps
+    useBackendUrl: {
+        http: backendHttp,
+        https: backendHttps,
     }
-} = require(
-    process.env.PROJECT_ROOT_FOR_WEBPACK + '/server'
-);
+} = contract;
 
 const determineBackend = async (webAddress, iterator) => {
 
@@ -21,17 +23,19 @@ const determineBackend = async (webAddress, iterator) => {
         const eConTimeout = setTimeout(() => {
             resolve(false)
         }, 30000)
-        require(protocol).get(webAddress, response => {
+        require(protocol).get(webAddress + '/test', response => {
             let data = "";
             response.on('data', (chunk) => data += chunk);
             response.on('end', () => {
+                console.log('received:', data)
                 clearTimeout(eConTimeout);
                 resolve(protocol)
             });
             process.env.USE_BACKEND = webAddress;
             process.env.USE_PROTOCOL = protocol;
             resolve(true);
-        }).on("error", () => {
+        }).on("error", (e) => {
+            console.log('receiving err:', e)
             clearTimeout(eConTimeout);
             resolve(false)
         });

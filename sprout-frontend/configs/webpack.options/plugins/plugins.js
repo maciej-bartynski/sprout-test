@@ -2,17 +2,21 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CSSWebpackPlugin = require('mini-css-extract-plugin');
+const rootDir = path.join(__dirname, "../../..");
+const contract = require(rootDir + '/contract');
+const { useWebpackOutput } = contract;
+const { css, html, input } = useWebpackOutput
 
 module.exports = [
     new HtmlWebpackPlugin({
-        template: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates/index.html'),
+        template: input + '/' + html.filename,
         inject: false,
     }),
     new CleanWebpackPlugin({
         cleanStaleWebpackAssets: false
     }),
     new CSSWebpackPlugin({
-        template: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates/index.css'),
-        filename: 'index.css',
+        template: input + '/' + css.filename,
+        filename: css.filename,
     })
 ]

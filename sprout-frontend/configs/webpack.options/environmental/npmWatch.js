@@ -1,13 +1,17 @@
 
 require('dotenv').config()
-const path = require('path');
+const _path = require('path');
+const rootDir = _path.join(__dirname, "../../..");
+const contract = require(rootDir + '/contract');
+const { useWebpackOutput } = contract;
+const { js, input } = useWebpackOutput
 
 const npmWatch = {
-    entry: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates', 'index.js'),
+    entry: input + "/" + js.filename,
     output: {
-        filename: 'index.js',
+        filename: js.filename,
         publicPath: undefined,
-        path: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, '/watch'),
+        path: _path.join(rootDir, '/watch'),
     },
     mode: 'development',
     devtool: 'inline-source-map',

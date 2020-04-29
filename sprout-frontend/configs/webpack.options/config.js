@@ -4,6 +4,8 @@ const environmental = require('./environmental');
 const loaders = require('./loaders');
 const plugins = require('./plugins');
 
+const rootDir = path.join(__dirname, "../..");
+
 module.exports = {
     ...environmental,
     module: {
@@ -12,9 +14,9 @@ module.exports = {
     plugins,
     resolve: {
         alias: {
-            src: path.resolve(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src'),
-            Components: path.resolve(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/Components'),
-            RouteComponents: path.resolve(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/RouteComponents'),
+            src: path.resolve(rootDir, 'src'),
+            Components: path.resolve(rootDir, 'src/Components'),
+            RouteComponents: path.resolve(rootDir, 'src/RouteComponents'),
         }
     },
 }

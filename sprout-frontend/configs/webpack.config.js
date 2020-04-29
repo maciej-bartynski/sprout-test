@@ -1,8 +1,5 @@
-
-require('./rootPath.js');
-const determineBackend = require('./webpack.options/determineBackend');
-
 module.exports = async () => {
+    const determineBackend = require('./webpack.options/determineBackend');
     await determineBackend();
     return require('./webpack.options');
 };

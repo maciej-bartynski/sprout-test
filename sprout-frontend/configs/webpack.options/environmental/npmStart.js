@@ -1,13 +1,17 @@
-require('dotenv').config()
-const path = require('path');
+require('dotenv').config();
 const devServer = require('../devServer');
+const _path = require('path');
+const rootDir = _path.join(__dirname, "../../..");
+const contract = require(rootDir + '/contract');
+const { useWebpackOutput } = contract;
+const { js, input, output } = useWebpackOutput
 
 const npmStart = {
-    entry: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK, 'src/templates', 'index.js'),
+    entry: input + "/" + js.filename,
     output: {
-        filename: 'index.js',
+        filename: js.filename,
         publicPath: "/",
-        path: path.join(process.env.PROJECT_ROOT_FOR_WEBPACK,'start'),
+        path: _path.join(rootDir, '/start'),
     },
     mode: 'development',
     devtool: 'inline-source-map',
