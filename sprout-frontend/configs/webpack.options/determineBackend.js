@@ -1,3 +1,5 @@
+const axios = require('axios');
+const urlExist = require('url-exist');
 const { config } = require('dotenv');
 config();
 const contract = require('../../contract');
@@ -18,29 +20,14 @@ const determineBackend = async (webAddress, iterator) => {
         return undefined
     };
 
-    return await new Promise((resolve) => {
+    let success = await urlExist(webAddress + "/test");
+    if (success) {
         const protocol = webAddress.split('://')[0];
-        const eConTimeout = setTimeout(() => {
-            resolve(false)
-        }, 30000)
-        require(protocol).get(webAddress + '/test', response => {
-            let data = "";
-            response.on('data', (chunk) => data += chunk);
-            response.on('end', () => {
-                console.log('received:', data)
-                clearTimeout(eConTimeout);
-                resolve(protocol)
-            });
-            process.env.USE_BACKEND = webAddress;
-            process.env.USE_PROTOCOL = protocol;
-            resolve(true);
-        }).on("error", (e) => {
-            console.log('receiving err:', e)
-            clearTimeout(eConTimeout);
-            resolve(false)
-        });
-    }) || determineBackend(backendHttp, iterator + 1);
-
+        process.env.USE_BACKEND = webAddress;
+        process.env.USE_PROTOCOL = protocol;
+    } else {
+        await determineBackend(backendHttp, iterator + 1);
+    }
 };
 
 module.exports = async () => {

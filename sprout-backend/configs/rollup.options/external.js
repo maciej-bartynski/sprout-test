@@ -13,6 +13,7 @@ const external = [
     "nodemon",
     "uuid",
     "ws",
+    "axios"
 ]
 
 export default external
