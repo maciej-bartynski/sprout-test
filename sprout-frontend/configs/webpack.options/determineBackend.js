@@ -1,4 +1,3 @@
-const axios = require('axios');
 const urlExist = require('url-exist');
 const { config } = require('dotenv');
 config();
